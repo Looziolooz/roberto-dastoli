@@ -1,7 +1,12 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = 'https://ewjkywegaxyhpzapzmxx.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV3amt5d2VnYXh5aHB6YXB6bXh4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQ1MzUwMywiZXhwIjoyMDkwMDI5NTAzfQ.sB-4ZVzvlKFUvkVI6Ns7gppX9ireWktzcHZVoiw4q_E';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Error: Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables');
+  process.exit(1);
+}
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -19,29 +24,8 @@ const fotoCronologiche = [
   { url: 'image_10.jpg', data_foto: '2016-01-01', descrizione: 'Foto finale', tag: ['Giovinezza'] },
 ];
 
-async function setup() {
-  console.log('Creazione tabella ricordi...');
-  
-  const { error: createError } = await supabase.rpc('create_table_ricordi', {});
-  
-  // Create table using raw SQL
-  const { error: tableError } = await supabase.from('ricordi').select('id').limit(1);
-  
-  if (tableError && tableError.code === '42P01') {
-    console.log('Tabella non esiste, creo...');
-    // Table doesn't exist, need to create it via SQL
-    // Try using the schema builder
-    const { error } = await supabase.schema.createTable('ricordi', (table) => {
-      table.uuid('id').primaryKey();
-      table.text('url').notNull();
-      table.date('data_foto');
-      table.text('descrizione');
-      table.specificType('tag', 'text[]');
-      table.timestamp('created_at').defaultTo('now()');
-    });
-  }
-  
-  console.log('Inserimento ricordi...');
+async function inserisciRicordi() {
+  console.log('Inserimento ricordi in corso...');
   
   for (const foto of fotoCronologiche) {
     const { data, error } = await supabase
@@ -49,13 +33,13 @@ async function setup() {
       .insert([foto]);
     
     if (error) {
-      console.error(`Errore inserimento ${foto.url}:`, error.message);
+      console.error('Errore inserimento ' + foto.url + ':', error.message);
     } else {
-      console.log(`✓ Inserito: ${foto.descrizione}`);
+      console.log('Inserito: ' + foto.descrizione);
     }
   }
   
   console.log('Completato!');
 }
 
-setup().catch(console.error);
+inserisciRicordi();

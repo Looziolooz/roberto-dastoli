@@ -49,7 +49,7 @@ export default function RootLayout({
     <html lang="it" className={`${cormorant.variable} ${dmSans.variable}`}>
       <body
         suppressHydrationWarning
-        className="bg-[#F5F0EB] text-[#2C2C2E] min-h-screen flex flex-col font-cormorant"
+        className="bg-brand-bg text-brand-text min-h-screen flex flex-col font-cormorant"
       >
         <Header />
         <main className="flex-1 max-w-[1100px] mx-auto px-6 pb-16 w-full">

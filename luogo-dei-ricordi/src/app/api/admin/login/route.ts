@@ -56,6 +56,26 @@ function checkRateLimit(ip: string): {
 // ----------------------------------------------------------------
 export const activeTokens = new Map<string, { expiresAt: number }>();
 
+export function verifySessionToken(req: NextRequest): boolean {
+  const token = req.cookies.get("admin_session")?.value;
+  if (!token) return false;
+  
+  const record = activeTokens.get(token);
+  if (!record) return false;
+  
+  if (Date.now() > record.expiresAt) {
+    activeTokens.delete(token);
+    return false;
+  }
+  
+  return true;
+}
+
+export async function GET(req: NextRequest) {
+  const isValid = verifySessionToken(req);
+  return NextResponse.json({ authenticated: isValid });
+}
+
 function generateSessionToken(): string {
   return randomBytes(32).toString("hex");
 }

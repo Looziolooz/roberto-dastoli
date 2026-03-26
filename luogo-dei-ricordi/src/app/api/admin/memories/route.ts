@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
-import { activeTokens } from "../login/route";
+import { verifySessionToken } from "../login/route";
 import { AdminActionPayload, AdminDeleteMemoryPayload } from "@/types";
 
 function getAdminClient() {
@@ -10,24 +10,8 @@ function getAdminClient() {
   );
 }
 
-// penetration-tester: validate against the token map, not a static string
-function checkAuth(req: NextRequest): boolean {
-  const token = req.cookies.get("admin_session")?.value;
-  if (!token) return false;
-
-  const record = activeTokens.get(token);
-  if (!record) return false;
-
-  if (Date.now() > record.expiresAt) {
-    activeTokens.delete(token);
-    return false;
-  }
-
-  return true;
-}
-
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req))
+  if (!verifySessionToken(req))
     return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
@@ -54,7 +38,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  if (!checkAuth(req))
+  if (!verifySessionToken(req))
     return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
 
   const supabase = getAdminClient();
@@ -80,7 +64,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!checkAuth(req))
+  if (!verifySessionToken(req))
     return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
 
   const supabase = getAdminClient();

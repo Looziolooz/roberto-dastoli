@@ -73,7 +73,7 @@ export default async function Home() {
             <div className="flex flex-wrap gap-3 justify-center">
               <Link
                 href="/storia"
-                className="px-6 py-3 bg-white text-[#2C2C2E] rounded-lg font-dm-sans font-medium hover:bg-white/90 transition-all hover:shadow-lg"
+                className="px-6 py-3 bg-white text-brand-text rounded-lg font-dm-sans font-medium hover:bg-white/90 transition-all hover:shadow-lg"
               >
                 La sua storia
               </Link>
@@ -85,7 +85,7 @@ export default async function Home() {
               </Link>
               <Link
                 href="/carica"
-                className="px-6 py-3 bg-[#8B7355] text-white rounded-lg font-dm-sans font-medium hover:bg-[#7A6455] transition-all hover:shadow-md"
+                className="px-6 py-3 bg-brand-accent text-white rounded-lg font-dm-sans font-medium hover:bg-brand-accent/80 transition-all hover:shadow-md"
               >
                 Condividi un ricordo
               </Link>
@@ -105,13 +105,13 @@ export default async function Home() {
             ].map(({ value, label, icon }) => (
               <div
                 key={label}
-                className="text-center p-5 bg-white rounded-2xl shadow-sm border border-[#E5DFD7] group hover:border-[#C4A882] transition-colors"
+                className="text-center p-5 bg-white rounded-2xl shadow-sm border border-brand-border group hover:border-brand-accent-light transition-colors"
               >
                 <div className="text-xl mb-1 opacity-60">{icon}</div>
-                <div className="text-3xl font-semibold text-[#8B7355] font-cormorant">
+                <div className="text-3xl font-semibold text-brand-accent font-cormorant">
                   {value}
                 </div>
-                <div className="text-xs text-[#8E8E93] font-dm-sans mt-1 uppercase tracking-wide">
+                <div className="text-xs text-brand-muted font-dm-sans mt-1 uppercase tracking-wide">
                   {label}
                 </div>
               </div>
@@ -121,9 +121,9 @@ export default async function Home() {
 
         {/* ── Divider ── */}
         <div className="flex items-center gap-4 max-w-md mx-auto">
-          <div className="flex-1 h-px bg-[#E5DFD7]" />
-          <span className="text-[#C4A882] text-lg">✦</span>
-          <div className="flex-1 h-px bg-[#E5DFD7]" />
+          <div className="flex-1 h-px bg-brand-border" />
+          <span className="text-brand-accent-light text-lg">✦</span>
+          <div className="flex-1 h-px bg-brand-border" />
         </div>
 
         {/* ── Navigation cards ── */}
@@ -152,15 +152,15 @@ export default async function Home() {
               <Link
                 key={href}
                 href={href}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-[#E5DFD7] hover:border-[#C4A882] hover:shadow-md transition-all group block"
+                className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border hover:border-brand-accent-light hover:shadow-md transition-all group block"
               >
                 <div className="text-2xl mb-3 opacity-70 group-hover:opacity-100 transition-opacity">
                   {icon}
                 </div>
-                <h3 className="text-lg font-semibold text-[#2C2C2E] font-cormorant mb-2 group-hover:text-[#8B7355] transition-colors">
+                <h3 className="text-lg font-semibold text-brand-text font-cormorant mb-2 group-hover:text-brand-accent transition-colors">
                   {title}
                 </h3>
-                <p className="text-sm text-[#8E8E93] font-dm-sans leading-relaxed">
+                <p className="text-sm text-brand-muted font-dm-sans leading-relaxed">
                   {desc}
                 </p>
               </Link>
@@ -171,26 +171,26 @@ export default async function Home() {
         {/* ── Latest story ── */}
         {latestStory && (
           <ScrollReveal delay={0.3}>
-            <section className="bg-white rounded-2xl p-8 shadow-sm border border-[#E5DFD7] max-w-2xl mx-auto">
+            <section className="bg-white rounded-2xl p-8 shadow-sm border border-brand-border max-w-2xl mx-auto">
               <div className="flex items-center gap-2 mb-4">
-                <span className="text-[#8B7355] opacity-50 text-lg">✦</span>
-                <span className="text-xs text-[#8E8E93] font-dm-sans uppercase tracking-widest">
+                <span className="text-brand-accent opacity-50 text-lg">✦</span>
+                <span className="text-xs text-brand-muted font-dm-sans uppercase tracking-widest">
                   L'ultimo racconto
                 </span>
               </div>
-              <h3 className="text-2xl text-[#8B7355] font-cormorant mb-3 font-semibold">
+              <h3 className="text-2xl text-brand-accent font-cormorant mb-3 font-semibold">
                 {latestStory.title}
               </h3>
-              <p className="text-[#2C2C2E] font-cormorant leading-relaxed line-clamp-4 text-lg">
+              <p className="text-brand-text font-cormorant leading-relaxed line-clamp-4 text-lg">
                 {latestStory.body}
               </p>
               <div className="mt-5 flex items-center justify-between">
-                <span className="text-sm text-[#8E8E93] font-dm-sans">
+                <span className="text-sm text-brand-muted font-dm-sans">
                   di {latestStory.is_anonymous ? "Anonimo" : latestStory.author_name}
                 </span>
                 <Link
                   href="/racconti"
-                  className="text-sm text-[#8B7355] font-dm-sans hover:underline"
+                  className="text-sm text-brand-accent font-dm-sans hover:underline"
                 >
                   Leggi tutti i racconti →
                 </Link>
@@ -201,24 +201,24 @@ export default async function Home() {
 
         {/* ── CTA ── */}
         <ScrollReveal delay={0.4}>
-          <section className="text-center space-y-4 py-8 border-t border-[#E5DFD7]">
-            <h2 className="text-2xl font-semibold text-[#2C2C2E] font-cormorant">
+          <section className="text-center space-y-4 py-8 border-t border-brand-border">
+            <h2 className="text-2xl font-semibold text-brand-text font-cormorant">
               Hai un ricordo da condividere?
             </h2>
-            <p className="text-[#8E8E93] max-w-md mx-auto font-dm-sans text-sm leading-relaxed">
+            <p className="text-brand-muted max-w-md mx-auto font-dm-sans text-sm leading-relaxed">
               Ogni foto e ogni parola contribuisce a costruire un mosaico di
               memorie che non svanirà mai.
             </p>
             <div className="flex justify-center gap-3">
               <Link
                 href="/carica"
-                className="px-5 py-2.5 bg-[#8B7355] text-white rounded-lg font-dm-sans text-sm hover:bg-[#7A6455] transition-colors"
+                className="px-5 py-2.5 bg-brand-accent text-white rounded-lg font-dm-sans text-sm hover:bg-brand-accent/80 transition-colors"
               >
                 Carica una foto
               </Link>
               <Link
                 href="/carica"
-                className="px-5 py-2.5 border border-[#E5DFD7] text-[#8B7355] rounded-lg font-dm-sans text-sm hover:bg-[rgba(139,115,85,0.08)] transition-colors"
+                className="px-5 py-2.5 border border-brand-border text-brand-accent rounded-lg font-dm-sans text-sm hover:bg-brand-accent-soft transition-colors"
               >
                 Scrivi un racconto
               </Link>

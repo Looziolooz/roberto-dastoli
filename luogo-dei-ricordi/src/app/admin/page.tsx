@@ -37,8 +37,9 @@ export default function AdminPage() {
 
   const checkAuth = async () => {
     setAuthChecking(true);
-    const res = await fetch("/api/admin/memories");
-    if (res.ok) {
+    const res = await fetch("/api/admin/login");
+    const data = await res.json();
+    if (data.authenticated) {
       setIsAuthenticated(true);
       await fetchAllData();
     }
@@ -239,7 +240,7 @@ export default function AdminPage() {
   if (authChecking) {
     return (
       <div className="flex justify-center items-center py-24">
-        <Loader2 className="w-6 h-6 animate-spin text-[#8B7355]" />
+        <Loader2 className="w-6 h-6 animate-spin text-brand-accent" />
       </div>
     );
   }
@@ -249,10 +250,10 @@ export default function AdminPage() {
       <div className="space-y-8 pt-8">
         <ScrollReveal>
           <div className="text-center space-y-3">
-            <h1 className="text-4xl font-semibold text-[#2C2C2E] font-cormorant">
+            <h1 className="text-4xl font-semibold text-brand-text font-cormorant">
               Admin
             </h1>
-            <p className="text-[#8E8E93] font-dm-sans text-sm">
+            <p className="text-brand-muted font-dm-sans text-sm">
               Inserisci il PIN per accedere
             </p>
           </div>
@@ -261,15 +262,15 @@ export default function AdminPage() {
         <ScrollReveal delay={0.2}>
           <form
             onSubmit={handleLogin}
-            className="max-w-xs mx-auto space-y-4 bg-white rounded-2xl p-7 shadow-sm border border-[#E5DFD7]"
+            className="max-w-xs mx-auto space-y-4 bg-white rounded-2xl p-7 shadow-sm border border-brand-border"
           >
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E93]" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-muted" />
               <input
                 type="password"
                 value={pin}
                 onChange={(e) => setPin(e.target.value)}
-                className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans text-center tracking-widest text-xl"
+                className="w-full pl-11 pr-4 py-3.5 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans text-center tracking-widest text-xl"
                 placeholder="••••"
                 maxLength={6}
                 disabled={rateLimited}
@@ -277,7 +278,7 @@ export default function AdminPage() {
               />
             </div>
             {error && (
-              <p className="text-[#B05050] text-xs text-center font-dm-sans">
+              <p className="text-brand-danger text-xs text-center font-dm-sans">
                 {error}
                 {rateLimited && retryAfter > 0 && ` (${retryAfter}s)`}
               </p>
@@ -285,7 +286,7 @@ export default function AdminPage() {
             <button
               type="submit"
               disabled={loading || rateLimited}
-              className="w-full py-3 bg-[#8B7355] text-white rounded-xl font-dm-sans font-medium hover:bg-[#7A6455] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-brand-accent text-white rounded-xl font-dm-sans font-medium hover:bg-brand-accent/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -315,7 +316,7 @@ export default function AdminPage() {
     <div className="space-y-8 pt-8">
       <ScrollReveal>
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-semibold text-[#2C2C2E] font-cormorant">
+          <h1 className="text-4xl font-semibold text-brand-text font-cormorant">
             Pannello Admin
           </h1>
           <div className="flex justify-center gap-2 flex-wrap">
@@ -323,8 +324,8 @@ export default function AdminPage() {
               onClick={() => setContentTab("memories")}
               className={`px-4 py-2 rounded-lg font-dm-sans text-sm transition-colors flex items-center gap-2 ${
                 contentTab === "memories"
-                  ? "bg-[#8B7355] text-white"
-                  : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#C4A882]"
+                  ? "bg-brand-accent text-white"
+                  : "bg-white text-brand-muted border border-brand-border hover:border-[#C4A882]"
               }`}
             >
               <ImageIcon className="w-4 h-4" />
@@ -334,8 +335,8 @@ export default function AdminPage() {
               onClick={() => setContentTab("stories")}
               className={`px-4 py-2 rounded-lg font-dm-sans text-sm transition-colors flex items-center gap-2 ${
                 contentTab === "stories"
-                  ? "bg-[#8B7355] text-white"
-                  : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#C4A882]"
+                  ? "bg-brand-accent text-white"
+                  : "bg-white text-brand-muted border border-brand-border hover:border-[#C4A882]"
               }`}
             >
               <FileText className="w-4 h-4" />
@@ -345,8 +346,8 @@ export default function AdminPage() {
               onClick={() => setContentTab("archive")}
               className={`px-4 py-2 rounded-lg font-dm-sans text-sm transition-colors flex items-center gap-2 ${
                 contentTab === "archive"
-                  ? "bg-[#8B7355] text-white"
-                  : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#C4A882]"
+                  ? "bg-brand-accent text-white"
+                  : "bg-white text-brand-muted border border-brand-border hover:border-[#C4A882]"
               }`}
             >
               <Archive className="w-4 h-4" />
@@ -358,11 +359,11 @@ export default function AdminPage() {
 
       {contentTab !== "archive" && (
         <div className="flex justify-center">
-          <div className="inline-flex bg-white rounded-lg border border-[#E5DFD7] p-1 gap-1">
+          <div className="inline-flex bg-white rounded-lg border border-brand-border p-1 gap-1">
             <button
               onClick={() => setContentFilter("all")}
               className={`px-3 py-1.5 rounded-md text-xs font-dm-sans transition-colors ${
-                contentFilter === "all" ? "bg-[#8B7355] text-white" : "text-[#8E8E93] hover:text-[#2C2C2E]"
+                contentFilter === "all" ? "bg-brand-accent text-white" : "text-brand-muted hover:text-brand-text"
               }`}
             >
               Tutti ({contentTab === "memories" ? memories.length : stories.length})
@@ -370,7 +371,7 @@ export default function AdminPage() {
             <button
               onClick={() => setContentFilter("pending")}
               className={`px-3 py-1.5 rounded-md text-xs font-dm-sans transition-colors ${
-                contentFilter === "pending" ? "bg-[#8B7355] text-white" : "text-[#8E8E93] hover:text-[#2C2C2E]"
+                contentFilter === "pending" ? "bg-brand-accent text-white" : "text-brand-muted hover:text-brand-text"
               }`}
             >
               In attesa ({contentTab === "memories" ? memories.filter(m => !m.is_approved).length : stories.filter(s => !s.is_approved).length})
@@ -378,7 +379,7 @@ export default function AdminPage() {
             <button
               onClick={() => setContentFilter("approved")}
               className={`px-3 py-1.5 rounded-md text-xs font-dm-sans transition-colors ${
-                contentFilter === "approved" ? "bg-[#8B7355] text-white" : "text-[#8E8E93] hover:text-[#2C2C2E]"
+                contentFilter === "approved" ? "bg-brand-accent text-white" : "text-brand-muted hover:text-brand-text"
               }`}
             >
               Approvati ({contentTab === "memories" ? memories.filter(m => m.is_approved).length : stories.filter(s => s.is_approved).length})
@@ -390,7 +391,7 @@ export default function AdminPage() {
       {contentTab === "memories" && (
         <>
           {filteredMemories.length === 0 ? (
-            <p className="text-center text-[#8E8E93] py-12 font-dm-sans">
+            <p className="text-center text-brand-muted py-12 font-dm-sans">
               Nessuna foto {contentFilter === "pending" ? "in attesa" : contentFilter === "approved" ? "approvata" : ""} ✓
             </p>
           ) : (
@@ -400,11 +401,11 @@ export default function AdminPage() {
                 return (
                   <div
                     key={memory.id}
-                    className="bg-white rounded-xl shadow-sm border border-[#E5DFD7] overflow-hidden"
+                    className="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden"
                   >
                     <div className="flex">
                       {memory.image_url && (
-                        <div className="w-24 h-24 flex-shrink-0 bg-gray-100">
+                        <div className="w-24 h-24 shrink-0 bg-gray-100">
                           <img src={memory.image_url} alt="" className="w-full h-full object-cover" />
                         </div>
                       )}
@@ -416,24 +417,24 @@ export default function AdminPage() {
                                 {memory.is_approved ? "Approvato" : "In attesa"}
                               </span>
                             </div>
-                            <p className={`font-dm-sans text-sm text-[#2C2C2E] ${isExpanded ? "" : "line-clamp-2"}`}>
-                              {memory.caption || <span className="text-[#8E8E93] italic">Nessuna didascalia</span>}
+                            <p className={`font-dm-sans text-sm text-brand-text ${isExpanded ? "" : "line-clamp-2"}`}>
+                              {memory.caption || <span className="text-brand-muted italic">Nessuna didascalia</span>}
                             </p>
-                            <p className="text-xs text-[#8E8E93] mt-1">
+                            <p className="text-xs text-brand-muted mt-1">
                               di <strong>{memory.author_name}</strong>
                               {memory.created_at && ` · ${new Date(memory.created_at).toLocaleDateString("it-IT")}`}
                             </p>
                           </div>
                           <div className="flex items-center gap-1">
-                            <button onClick={() => toggleExpand(memory.id)} className="p-1.5 text-[#8E8E93] hover:bg-gray-100 rounded-lg">
+                            <button onClick={() => toggleExpand(memory.id)} className="p-1.5 text-brand-muted hover:bg-gray-100 rounded-lg">
                               {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                             </button>
                             {!memory.is_approved && (
-                              <button onClick={() => handleApproveMemory(memory.id)} disabled={actionLoading === memory.id} className="p-1.5 bg-[#5B8C5A] text-white rounded-lg hover:bg-[#4A7A4A] disabled:opacity-50" title="Approva">
+                              <button onClick={() => handleApproveMemory(memory.id)} disabled={actionLoading === memory.id} className="p-1.5 bg-brand-success text-white rounded-lg hover:bg-brand-success/80 disabled:opacity-50" title="Approva">
                                 <Check className="w-4 h-4" />
                               </button>
                             )}
-                            <button onClick={() => handleArchiveMemory(memory.id)} disabled={actionLoading === memory.id} className="p-1.5 bg-[#B05050] text-white rounded-lg hover:bg-[#9A4040] disabled:opacity-50" title="Archivia">
+                            <button onClick={() => handleArchiveMemory(memory.id)} disabled={actionLoading === memory.id} className="p-1.5 bg-brand-danger text-white rounded-lg hover:bg-brand-danger/80 disabled:opacity-50" title="Archivia">
                               <Archive className="w-4 h-4" />
                             </button>
                           </div>
@@ -441,13 +442,13 @@ export default function AdminPage() {
                       </div>
                     </div>
                     {isExpanded && memory.caption && (
-                      <div className="px-3 pb-3 border-t border-[#E5DFD7] pt-2">
-                        <p className="text-xs text-[#8E8E93] mb-1">Testo completo:</p>
-                        <p className="font-dm-sans text-sm text-[#2C2C2E] whitespace-pre-wrap">{memory.caption}</p>
+                      <div className="px-3 pb-3 border-t border-brand-border pt-2">
+                        <p className="text-xs text-brand-muted mb-1">Testo completo:</p>
+                        <p className="font-dm-sans text-sm text-brand-text whitespace-pre-wrap">{memory.caption}</p>
                         {memory.memory_tags && memory.memory_tags.length > 0 && (
                           <div className="flex gap-1 mt-2 flex-wrap">
                             {memory.memory_tags.map((mt: MemoryTagJoin) => (
-                              <span key={mt.tag_id} className="text-xs bg-[rgba(139,115,85,0.08)] px-2 py-0.5 rounded-full">
+                              <span key={mt.tag_id} className="text-xs bg-brand-accent-soft px-2 py-0.5 rounded-full">
                                 {mt.tags.icon} {mt.tags.name}
                               </span>
                             ))}
@@ -466,7 +467,7 @@ export default function AdminPage() {
       {contentTab === "stories" && (
         <>
           {filteredStories.length === 0 ? (
-            <p className="text-center text-[#8E8E93] py-12 font-dm-sans">
+            <p className="text-center text-brand-muted py-12 font-dm-sans">
               Nessun racconto {contentFilter === "pending" ? "in attesa" : contentFilter === "approved" ? "approvato" : ""} ✓
             </p>
           ) : (
@@ -474,7 +475,7 @@ export default function AdminPage() {
               {filteredStories.map((story) => {
                 const isExpanded = expandedCards.has(story.id);
                 return (
-                  <div key={story.id} className="bg-white rounded-xl shadow-sm border border-[#E5DFD7] overflow-hidden">
+                  <div key={story.id} className="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden">
                     <div className="p-3">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
@@ -483,32 +484,32 @@ export default function AdminPage() {
                               {story.is_approved ? "Approvato" : "In attesa"}
                             </span>
                           </div>
-                          <h3 className="font-cormorant text-lg text-[#2C2C2E] mb-1">{story.title}</h3>
+                          <h3 className="font-cormorant text-lg text-brand-text mb-1">{story.title}</h3>
                           <p className={`font-dm-sans text-sm text-[#666] ${isExpanded ? "" : "line-clamp-2"}`}>{story.body}</p>
-                          <p className="text-xs text-[#8E8E93] mt-1">
+                          <p className="text-xs text-brand-muted mt-1">
                             di <strong>{story.is_anonymous ? "Anonimo" : story.author_name}</strong>
                             {story.created_at && ` · ${new Date(story.created_at).toLocaleDateString("it-IT")}`}
                           </p>
                         </div>
                         <div className="flex items-center gap-1">
-                          <button onClick={() => toggleExpand(story.id)} className="p-1.5 text-[#8E8E93] hover:bg-gray-100 rounded-lg">
+                          <button onClick={() => toggleExpand(story.id)} className="p-1.5 text-brand-muted hover:bg-gray-100 rounded-lg">
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </button>
                           {!story.is_approved && (
-                            <button onClick={() => handleApproveStory(story.id)} disabled={actionLoading === story.id} className="p-1.5 bg-[#5B8C5A] text-white rounded-lg hover:bg-[#4A7A4A] disabled:opacity-50" title="Approva">
+                            <button onClick={() => handleApproveStory(story.id)} disabled={actionLoading === story.id} className="p-1.5 bg-brand-success text-white rounded-lg hover:bg-brand-success/80 disabled:opacity-50" title="Approva">
                               <Check className="w-4 h-4" />
                             </button>
                           )}
-                          <button onClick={() => handleArchiveStory(story.id)} disabled={actionLoading === story.id} className="p-1.5 bg-[#B05050] text-white rounded-lg hover:bg-[#9A4040] disabled:opacity-50" title="Archivia">
+                          <button onClick={() => handleArchiveStory(story.id)} disabled={actionLoading === story.id} className="p-1.5 bg-brand-danger text-white rounded-lg hover:bg-brand-danger/80 disabled:opacity-50" title="Archivia">
                             <Archive className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
                     </div>
                     {isExpanded && (
-                      <div className="px-3 pb-3 border-t border-[#E5DFD7] pt-2">
-                        <p className="text-xs text-[#8E8E93] mb-1">Testo completo:</p>
-                        <p className="font-dm-sans text-sm text-[#2C2C2E] whitespace-pre-wrap">{story.body}</p>
+                      <div className="px-3 pb-3 border-t border-brand-border pt-2">
+                        <p className="text-xs text-brand-muted mb-1">Testo completo:</p>
+                        <p className="font-dm-sans text-sm text-brand-text whitespace-pre-wrap">{story.body}</p>
                       </div>
                     )}
                   </div>
@@ -522,7 +523,7 @@ export default function AdminPage() {
       {contentTab === "archive" && (
         <>
           {archivedItems.length === 0 ? (
-            <p className="text-center text-[#8E8E93] py-12 font-dm-sans">
+            <p className="text-center text-brand-muted py-12 font-dm-sans">
               Archvio vuoto ✓
             </p>
           ) : (
@@ -532,10 +533,10 @@ export default function AdminPage() {
                 const isMemory = item.type === "memory";
                 const data = item.data as MemoryWithTags | Story;
                 return (
-                  <div key={item.id} className="bg-white rounded-xl shadow-sm border border-[#E5DFD7] overflow-hidden">
+                  <div key={item.id} className="bg-white rounded-xl shadow-sm border border-brand-border overflow-hidden">
                     <div className="flex">
                       {isMemory && (data as MemoryWithTags).image_url && (
-                        <div className="w-20 h-20 flex-shrink-0 bg-gray-100 grayscale opacity-60">
+                        <div className="w-20 h-20 shrink-0 bg-gray-100 grayscale opacity-60">
                           <img src={(data as MemoryWithTags).image_url!} alt="" className="w-full h-full object-cover" />
                         </div>
                       )}
@@ -545,21 +546,21 @@ export default function AdminPage() {
                             {isMemory ? "Foto" : "Racconto"}
                           </span>
                         </div>
-                        <p className={`font-dm-sans text-sm text-[#2C2C2E] line-clamp-2`}>
+                        <p className={`font-dm-sans text-sm text-brand-text line-clamp-2`}>
                           {isMemory ? (data as MemoryWithTags).caption || "Nessuna didascalia" : (data as Story).title}
                         </p>
-                        <p className="text-xs text-[#8E8E93] mt-1">
+                        <p className="text-xs text-brand-muted mt-1">
                           di <strong>{isMemory ? (data as MemoryWithTags).author_name : (data as Story).author_name}</strong>
                         </p>
                       </div>
                       <div className="flex items-center gap-1 p-2">
-                        <button onClick={() => toggleExpand(item.id)} className="p-1.5 text-[#8E8E93] hover:bg-gray-100 rounded-lg">
+                        <button onClick={() => toggleExpand(item.id)} className="p-1.5 text-brand-muted hover:bg-gray-100 rounded-lg">
                           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                         </button>
-                        <button onClick={() => handleRestoreItem(item.id)} disabled={actionLoading === item.id} className="p-1.5 bg-[#5B8C5A] text-white rounded-lg hover:bg-[#4A7A4A] disabled:opacity-50" title="Ripristina">
+                        <button onClick={() => handleRestoreItem(item.id)} disabled={actionLoading === item.id} className="p-1.5 bg-brand-success text-white rounded-lg hover:bg-brand-success/80 disabled:opacity-50" title="Ripristina">
                           <RotateCcw className="w-4 h-4" />
                         </button>
-                        <button onClick={() => handlePermanentDelete(item.id)} disabled={actionLoading === item.id} className="p-1.5 bg-[#B05050] text-white rounded-lg hover:bg-[#9A4040] disabled:opacity-50" title="Elimina">
+                        <button onClick={() => handlePermanentDelete(item.id)} disabled={actionLoading === item.id} className="p-1.5 bg-brand-danger text-white rounded-lg hover:bg-brand-danger/80 disabled:opacity-50" title="Elimina">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -575,7 +576,7 @@ export default function AdminPage() {
       <div className="max-w-md mx-auto">
         <button
           onClick={() => setTagsExpanded(!tagsExpanded)}
-          className="w-full px-4 py-3 bg-white rounded-xl shadow-sm border border-[#E5DFD7] font-dm-sans text-sm text-[#2C2C2E] flex items-center justify-between hover:border-[#C4A882] transition-colors"
+          className="w-full px-4 py-3 bg-white rounded-xl shadow-sm border border-brand-border font-dm-sans text-sm text-brand-text flex items-center justify-between hover:border-[#C4A882] transition-colors"
         >
           <span>Categorie ({tags.length})</span>
           {tagsExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -589,12 +590,12 @@ export default function AdminPage() {
                 value={newTagName}
                 onChange={(e) => setNewTagName(e.target.value)}
                 placeholder="Nome categoria"
-                className="flex-1 px-4 py-2.5 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans text-sm"
+                className="flex-1 px-4 py-2.5 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans text-sm"
               />
               <select
                 value={newTagIcon}
                 onChange={(e) => setNewTagIcon(e.target.value)}
-                className="px-3 py-2.5 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans text-sm"
+                className="px-3 py-2.5 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans text-sm"
               >
                 {["🏷️","🌊","📚","⚽","👨‍👩‍👧‍👦","✈️","🎵","🤝","🎉","🏡","❤️","🎂"].map((e) => (
                   <option key={e} value={e}>{e}</option>
@@ -602,7 +603,7 @@ export default function AdminPage() {
               </select>
               <button
                 type="submit"
-                className="px-4 py-2.5 bg-[#8B7355] text-white rounded-xl hover:bg-[#7A6455] transition-colors"
+                className="px-4 py-2.5 bg-brand-accent text-white rounded-xl hover:bg-brand-accent/80 transition-colors"
                 aria-label="Aggiungi categoria"
               >
                 <Plus className="w-4 h-4" />
@@ -613,14 +614,14 @@ export default function AdminPage() {
               {tags.map((tag) => (
                 <div
                   key={tag.id}
-                  className="bg-white rounded-xl p-3 shadow-sm border border-[#E5DFD7] flex items-center justify-between"
+                  className="bg-white rounded-xl p-3 shadow-sm border border-brand-border flex items-center justify-between"
                 >
                   <span className="font-dm-sans text-sm">
                     {tag.icon} {tag.name}
                   </span>
                   <button
                     onClick={() => handleDeleteTag(tag.id)}
-                    className="p-1.5 text-[#B05050] hover:bg-[rgba(176,80,80,0.08)] rounded-lg transition-colors"
+                    className="p-1.5 text-brand-danger hover:bg-brand-danger-soft rounded-lg transition-colors"
                     aria-label={`Elimina ${tag.name}`}
                   >
                     <Trash2 className="w-4 h-4" />

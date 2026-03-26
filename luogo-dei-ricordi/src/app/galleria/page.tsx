@@ -64,10 +64,10 @@ export default function GalleriaPage() {
     <div className="space-y-8 pt-8">
       <ScrollReveal>
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-semibold text-[#2C2C2E] font-cormorant">
+          <h1 className="text-4xl font-semibold text-brand-text font-cormorant">
             Galleria
           </h1>
-          <p className="text-[#8E8E93] font-dm-sans">
+          <p className="text-brand-muted font-dm-sans">
             Ogni immagine racconta una storia
           </p>
         </div>
@@ -85,8 +85,8 @@ export default function GalleriaPage() {
             aria-pressed={selectedTag === null}
             className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors ${
               selectedTag === null
-                ? "bg-[#8B7355] text-white"
-                : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#8B7355]"
+                ? "bg-brand-accent text-white"
+                : "bg-white text-brand-muted border border-brand-border hover:border-[#8B7355]"
             }`}
           >
             Tutte
@@ -100,8 +100,8 @@ export default function GalleriaPage() {
               aria-pressed={selectedTag === tag.id}
               className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors ${
                 selectedTag === tag.id
-                  ? "bg-[#8B7355] text-white"
-                  : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#8B7355]"
+                  ? "bg-brand-accent text-white"
+                  : "bg-white text-brand-muted border border-brand-border hover:border-[#8B7355]"
               }`}
             >
               {tag.icon} {tag.name}
@@ -112,9 +112,9 @@ export default function GalleriaPage() {
 
       {/* Gallery grid */}
       {loading ? (
-        <div className="text-center py-12 text-[#8E8E93]">Caricamento...</div>
+        <div className="text-center py-12 text-brand-muted">Caricamento...</div>
       ) : filteredMemories.length === 0 ? (
-        <div className="text-center py-12 text-[#8E8E93]">
+        <div className="text-center py-12 text-brand-muted">
           Nessuna foto {selectedTag ? "in questa categoria" : "ancora"}
         </div>
       ) : (
@@ -124,11 +124,11 @@ export default function GalleriaPage() {
               <div className="mb-4 break-inside-avoid">
                 {/* accessibility-tester: button role + aria-label for screen readers */}
                 <button
-                  className="w-full text-left cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B7355] focus-visible:ring-offset-2 rounded-xl"
+                  className="w-full text-left cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 rounded-xl"
                   onClick={() => setSelectedImage(memory)}
                   aria-label={`Apri foto: ${memory.caption} di ${memory.author_name}`}
                 >
-                  <div className="relative rounded-xl overflow-hidden bg-white shadow-sm border border-[#E5DFD7]">
+                  <div className="relative rounded-xl overflow-hidden bg-white shadow-sm border border-brand-border">
                     {memory.image_url ? (
                       // senior-react-specialist: priority only on first 3 images,
                       // sizes for responsive layout, loading="lazy" for the rest
@@ -143,8 +143,8 @@ export default function GalleriaPage() {
                         loading={index < 3 ? undefined : "lazy"}
                       />
                     ) : (
-                      <div className="w-full h-48 bg-[#F5F0EB] flex items-center justify-center">
-                        <span className="text-4xl text-[#8B7355]">✦</span>
+                      <div className="w-full h-48 bg-brand-bg flex items-center justify-center">
+                        <span className="text-4xl text-brand-accent">✦</span>
                       </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity" />
@@ -194,7 +194,7 @@ export default function GalleriaPage() {
             <button
               autoFocus
               onClick={closeModal}
-              className="absolute top-4 right-4 p-1.5 rounded-full text-[#8E8E93] hover:bg-[#F5F0EB] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B7355] transition-colors"
+              className="absolute top-4 right-4 p-1.5 rounded-full text-brand-muted hover:bg-brand-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent transition-colors"
               aria-label="Chiudi"
             >
               <X className="w-5 h-5" />
@@ -219,7 +219,7 @@ export default function GalleriaPage() {
             >
               {selectedImage.caption}
             </h3>
-            <p className="text-sm text-[#8E8E93] font-dm-sans mb-4">
+            <p className="text-sm text-brand-muted font-dm-sans mb-4">
               di {selectedImage.author_name}
             </p>
 
@@ -228,7 +228,7 @@ export default function GalleriaPage() {
                 {selectedImage.memory_tags.map((mt: MemoryTagJoin) => (
                   <span
                     key={mt.tag_id}
-                    className="bg-[rgba(139,115,85,0.08)] px-3 py-1 rounded-full text-sm"
+                    className="bg-brand-accent-soft px-3 py-1 rounded-full text-sm"
                   >
                     {mt.tags.icon} {mt.tags.name}
                   </span>

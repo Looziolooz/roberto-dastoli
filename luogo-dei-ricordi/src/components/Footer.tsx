@@ -4,10 +4,10 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[#E5DFD7] py-10 mt-8">
+    <footer className="border-t border-brand-border py-10 mt-8">
       <div className="max-w-[1100px] mx-auto px-6">
         {/* Quote */}
-        <p className="text-[#8B7355] font-cormorant text-xl italic text-center mb-6">
+        <p className="text-brand-accent font-cormorant text-xl italic text-center mb-6">
           "I ricordi più belli non svaniscono, cambiano solo casa."
         </p>
 
@@ -22,7 +22,7 @@ export function Footer() {
             <Link
               key={href}
               href={href}
-              className="text-sm text-[#8E8E93] font-dm-sans hover:text-[#8B7355] transition-colors"
+              className="text-sm text-brand-muted font-dm-sans hover:text-brand-accent transition-colors"
             >
               {label}
             </Link>
@@ -30,12 +30,12 @@ export function Footer() {
         </nav>
 
         {/* Bottom */}
-        <div className="flex items-center justify-center gap-3 text-xs text-[#8E8E93] font-dm-sans">
+        <div className="flex items-center justify-center gap-3 text-xs text-brand-muted font-dm-sans">
           <span>✦</span>
           <span>Un luogo dedicato a chi non dimentichiamo mai</span>
           <span>✦</span>
         </div>
-        <div className="flex items-center justify-center gap-1 text-xs text-[#8E8E93] font-dm-sans mt-3">
+        <div className="flex items-center justify-center gap-1 text-xs text-brand-muted font-dm-sans mt-3">
           <span>Fatto con</span>
           <span>❤️</span>
           <span>da</span>
@@ -43,7 +43,7 @@ export function Footer() {
             href="https://www.facebook.com/looziolooz/"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#8B7355] hover:underline"
+            className="text-brand-accent hover:underline"
           >
             Lorenzo
           </a>

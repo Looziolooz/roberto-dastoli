@@ -191,10 +191,10 @@ export default function CaricaPage() {
     <div className="space-y-8 pt-8">
       <ScrollReveal>
         <div className="text-center space-y-3">
-          <h1 className="text-4xl font-semibold text-[#2C2C2E] font-cormorant">
+          <h1 className="text-4xl font-semibold text-brand-text font-cormorant">
             Condividi un ricordo
           </h1>
-          <p className="text-[#8E8E93] font-dm-sans max-w-md mx-auto text-sm leading-relaxed">
+          <p className="text-brand-muted font-dm-sans max-w-md mx-auto text-sm leading-relaxed">
             Ogni contributo rende questo luogo più ricco. Le foto e i racconti
             saranno visibili dopo l'approvazione.
           </p>
@@ -208,8 +208,8 @@ export default function CaricaPage() {
             onClick={() => { setActiveTab("memory"); setSuccess(false); setError(""); }}
             className={`flex items-center gap-2 px-5 py-3 rounded-xl font-dm-sans text-sm transition-all ${
               activeTab === "memory"
-                ? "bg-[#8B7355] text-white shadow-sm"
-                : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#C4A882]"
+                ? "bg-brand-accent text-white shadow-sm"
+                : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent-light"
             }`}
           >
             <Upload className="w-4 h-4" />
@@ -219,8 +219,8 @@ export default function CaricaPage() {
             onClick={() => { setActiveTab("story"); setSuccess(false); setError(""); }}
             className={`flex items-center gap-2 px-5 py-3 rounded-xl font-dm-sans text-sm transition-all ${
               activeTab === "story"
-                ? "bg-[#8B7355] text-white shadow-sm"
-                : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#C4A882]"
+                ? "bg-brand-accent text-white shadow-sm"
+                : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent-light"
             }`}
           >
             <FileText className="w-4 h-4" />
@@ -232,13 +232,13 @@ export default function CaricaPage() {
       {/* Feedback banners */}
       {success && (
         <div className="bg-[rgba(91,140,90,0.1)] border border-[#5B8C5A] text-[#5B8C5A] px-6 py-4 rounded-xl flex items-center gap-3 font-dm-sans max-w-xl mx-auto">
-          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 shrink-0" />
           <span>Grazie! Il tuo contributo è stato inviato e sarà visibile dopo l'approvazione.</span>
         </div>
       )}
       {error && (
-        <div className="bg-[rgba(176,80,80,0.1)] border border-[#B05050] text-[#B05050] px-6 py-4 rounded-xl flex items-center gap-3 font-dm-sans max-w-xl mx-auto">
-          <X className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-[rgba(176,80,80,0.1)] border border-[#B05050] text-brand-danger px-6 py-4 rounded-xl flex items-center gap-3 font-dm-sans max-w-xl mx-auto">
+          <X className="w-5 h-5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -248,26 +248,26 @@ export default function CaricaPage() {
         <ScrollReveal delay={0.15}>
           <form
             onSubmit={handleMemorySubmit}
-            className="max-w-xl mx-auto space-y-5 bg-white rounded-2xl p-7 shadow-sm border border-[#E5DFD7]"
+            className="max-w-xl mx-auto space-y-5 bg-white rounded-2xl p-7 shadow-sm border border-brand-border"
           >
             {/* Image drop zone */}
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
-                Foto <span className="text-[#C4A882]">(opzionale)</span>
+              <label className="block text-sm font-dm-sans text-brand-muted mb-2">
+                Foto <span className="text-brand-accent-light">(opzionale)</span>
               </label>
-              <div className="border-2 border-dashed border-[#E5DFD7] rounded-xl overflow-hidden hover:border-[#C4A882] transition-colors">
+              <div className="border-2 border-dashed border-brand-border rounded-xl overflow-hidden hover:border-brand-accent-light transition-colors">
                 {imagePreview ? (
                   <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-full h-full object-contain bg-[#F5F0EB]"
+                      className="w-full h-full object-contain bg-brand-bg"
                     />
                     <button
                       type="button"
                       onClick={() => { setImageFile(null); setImagePreview(null); }}
-                      className="absolute top-2 right-2 bg-[#B05050] text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-[#9A4040] transition-colors"
+                      className="absolute top-2 right-2 bg-brand-danger text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-brand-danger/80 transition-colors"
                       aria-label="Rimuovi foto"
                     >
                       <X className="w-4 h-4" />
@@ -281,8 +281,8 @@ export default function CaricaPage() {
                       onChange={handleImageChange}
                       className="hidden"
                     />
-                    <Upload className="w-8 h-8 text-[#C4A882]" />
-                    <span className="text-sm text-[#8E8E93] font-dm-sans text-center">
+                    <Upload className="w-8 h-8 text-brand-accent-light" />
+                    <span className="text-sm text-brand-muted font-dm-sans text-center">
                       Clicca per caricare
                       <br />
                       <span className="text-xs opacity-60">JPG, PNG, WebP — max 10MB</span>
@@ -294,30 +294,30 @@ export default function CaricaPage() {
 
             {/* Caption */}
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
-                Descrizione <span className="text-[#B05050]">*</span>
+              <label className="block text-sm font-dm-sans text-brand-muted mb-2">
+                Descrizione <span className="text-brand-danger">*</span>
               </label>
               <textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 required
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-cormorant text-lg resize-none"
                 placeholder="Racconta cosa sta succedendo..."
               />
             </div>
 
             {/* Author */}
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
-                Il tuo nome <span className="text-[#B05050]">*</span>
+              <label className="block text-sm font-dm-sans text-brand-muted mb-2">
+                Il tuo nome <span className="text-brand-danger">*</span>
               </label>
               <input
                 type="text"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans"
+                className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
                 placeholder="Il tuo nome"
               />
             </div>
@@ -325,13 +325,13 @@ export default function CaricaPage() {
             {/* Tags */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-dm-sans text-[#8E8E93]">
+                <label className="block text-sm font-dm-sans text-brand-muted">
                   Categoria
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowNewTagForm(!showNewTagForm)}
-                  className="text-xs text-[#8B7355] hover:underline flex items-center gap-1"
+                  className="text-xs text-brand-accent hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3 h-3" />
                   Nuova categoria
@@ -352,8 +352,8 @@ export default function CaricaPage() {
                     aria-pressed={selectedTags.includes(tag.id)}
                     className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors ${
                       selectedTags.includes(tag.id)
-                        ? "bg-[#8B7355] text-white"
-                        : "bg-[#F5F0EB] text-[#8E8E93] hover:border-[#C4A882] border border-transparent"
+                        ? "bg-brand-accent text-white"
+                        : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
                     }`}
                   >
                     {tag.icon} {tag.name}
@@ -368,14 +368,14 @@ export default function CaricaPage() {
                     onChange={(e) => setNewTagName(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleCreateTag(e as unknown as React.FormEvent))}
                     placeholder="Nome categoria"
-                    className="flex-1 px-3 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-sm font-dm-sans"
+                    className="flex-1 px-3 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none text-sm font-dm-sans"
                     maxLength={20}
                     autoFocus
                   />
                   <select
                     value={newTagIcon}
                     onChange={(e) => setNewTagIcon(e.target.value)}
-                    className="px-2 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-lg"
+                    className="px-2 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none text-lg"
                   >
                     {["😀","😃","😄","😁","😆","😅","🤣","😂","🙂","😊","😇","🥰","😍","🤩","😘","😗","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤮","🤧","🥵","🥶","🥴","😵","🤯","🤠","🥳","😎","🤓","🧐","😕","😟","🙁","😮","😯","😲","😳","🥺","😦","😧","😨","😰","😥","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖","😺","😸","😹","😻","😼","😽","🙀","😿","😾","🙈","🙉","🙊","💋","💌","💘","💝","💖","💗","💓","💞","💕","💟","❣️","💔","❤️","🧡","💛","💚","💙","💜","🤎","🖤","🤍","💯","💢","💥","💫","💦","💨","🕳️","💣","💬","👋","🤚","🖐️","✋","🖖","👌","🤌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾","🦿","🦵","🦶","👂","🦻","👃","🧠","🫀","🫁","🦷","🦴","👀","👁️","👅","👄","👶","🧒","👦","👧","🧑","👱","👨","🧔","👩","🧓","👴","👵","🙍","🙎","🙅","🙆","💁","🙋","🧏","🙇","🤦","🤷","👮","🕵️","💂","🥷","👷","🤴","👸","👳","👲","🧕","🤵","👰","🤰","🤱","👼","🎒","🎓","👑","📿","💄","💍","💎","🐵","🐒","🦍","🦧","🐶","🐕","🦮","🐩","🐺","🦊","🦝","🐱","🐈","🦁","🐯","🐅","🐆","🐴","🐎","🦄","🦓","🦌","🦬","🐮","🐂","🐃","🐄","🐷","🐖","🐗","🐽","🐏","🐑","🐐","🐪","🐫","🦒","🦘","🦬","🐭","🐹","🐰","🐇","🐿️","🦔","🦇","🐻","🐻‍❄️","🐨","🐼","🦥","🦦","🦨","🦘","🦡","🐾","🦃","🐔","🐓","🐣","🐤","🐥","🐦","🐧","🕊️","🦅","🦆","🦢","🦉","🦤","🪶","🦩","🦚","🦜","🪽","🐦‍⬛","🪿","🦆","🐸","🐊","🐢","🦎","🐍","🐲","🐉","🦕","🦖","🐳","🐋","🐬","🦭","🐟","🐠","🐡","🐙","🦑","🦐","🦞","🦀","🪼","🦂","🕷️","🕸️","🦟","🪰","🪱","🦋","🐌","🐛","🐜","🐝","🪲","🐞","🦗","🪳","🦽","🦼","🩼","🩺","🩻","🏋️","🤼","🤸","⛹️","🤺","🤾","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🧗","🚵","🚴","🧘","🏋️","🧜","🛀","🛁","🛎️","🚿","🛁","🛀","🧴","🧷","🧹","🧺","🧻","🪮","🧽","🧿","🧹","🧺","🪣","🧼","🫧","🪥","🧴","🧷","🧶","🪡","🧵","🪢","🧶","🧵","🪡","🧺","🧻","🧼","🫧","🪥","🧴","🧷","🧹","🧺","🧻","🧽","🧿","🧻","🧹","🧺","🪣","🧼","🫧","🪥","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🌋","🗻","🏔","⛰️","⛳","🗾","🗼","🗽","⛩️","⛪","🕌","🛕","🌐","🌎","🌍","🌏","🪨","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘","🌙","🌚","🌛","🌜","🌡️","☀️","🌝","🌞","🪐","⭐","🌟","✨","💫","☁️","⛅","⛈️","🌤","🌥","🌦","🌧","⛈️","🌩","🌨","☁️","❄️","☃️","⛄","🌬","💨","🌪","🌫","🌀","🌈","🌂","☂️","🌧","⛈️","🌩","⚡","🌪","🌫","🌀","🌂","☂️","🌧","⛈️","🌩","⚡","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚨","🚔","🚍","🚘","🚖","🚡","🚠","🚟","🚃","🚋","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","✈️","🛫","🛬","🛩️","💺","🛰️","🚀","🛸","🚁","🛶","⛵","🚤","🛥️","🛳️","⛴️","🚢","⚓","🪝","⛽","🚧","🚦","🚥","🚏","🗺️","🗿","🗽","🗼","🏰","🏯","🏟","🎡","🎢","🎠","⛲","⛺","🎪","🎭","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻","🎲","♟️","🎯","🎳","🎮","🕹️","🎰","🎱","🪀","🪁","🏏","⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","🏑","🥍","🏏","🥅","⛳","🪁","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","🛷","⛸️","🥌","🎿","⛷️","🏂","🪂","🏋️","🤼","🤸","🤺","🤾","⛹️","🏌️","🏇","🧘","🧗","🏄","🏊","🤽","🚣","🚵","🚴","🏋️","🧜","🛀","🚴","🚵","🏭","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🚂","🚆","🚇","🚊","🚉","🚝","🚞","🚄","🚅","🚈","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉"].map((e) => (
                       <option key={e} value={e}>{e}</option>
@@ -385,14 +385,14 @@ export default function CaricaPage() {
                     type="button"
                     onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
                     disabled={creatingTag || !newTagName.trim()}
-                    className="px-3 py-2 bg-[#8B7355] text-white rounded-lg hover:bg-[#7A6455] transition-colors disabled:opacity-50 text-sm"
+                    className="px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-colors disabled:opacity-50 text-sm"
                   >
                     {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
                   </button>
                   <button
                     type="button"
                     onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
-                    className="p-2 text-[#8E8E93] hover:text-[#B05050]"
+                    className="p-2 text-brand-muted hover:text-brand-danger"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -403,7 +403,7 @@ export default function CaricaPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-[#8B7355] text-white rounded-xl font-dm-sans font-medium hover:bg-[#7A6455] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-brand-accent text-white rounded-xl font-dm-sans font-medium hover:bg-brand-accent/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               {loading ? "Invio in corso..." : "Invia foto"}
@@ -417,38 +417,38 @@ export default function CaricaPage() {
         <ScrollReveal delay={0.15}>
           <form
             onSubmit={handleStorySubmit}
-            className="max-w-xl mx-auto space-y-5 bg-white rounded-2xl p-7 shadow-sm border border-[#E5DFD7]"
+            className="max-w-xl mx-auto space-y-5 bg-white rounded-2xl p-7 shadow-sm border border-brand-border"
           >
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
-                Titolo <span className="text-[#B05050]">*</span>
+              <label className="block text-sm font-dm-sans text-brand-muted mb-2">
+                Titolo <span className="text-brand-danger">*</span>
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg"
+                className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-cormorant text-lg"
                 placeholder="Dai un titolo al tuo racconto"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
-                Racconto <span className="text-[#B05050]">*</span>
+              <label className="block text-sm font-dm-sans text-brand-muted mb-2">
+                Racconto <span className="text-brand-danger">*</span>
               </label>
               <textarea
                 value={storyBody}
                 onChange={(e) => setStoryBody(e.target.value)}
                 required
                 rows={9}
-                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-cormorant text-lg resize-none"
                 placeholder="Scrivi il tuo ricordo..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
+              <label className="block text-sm font-dm-sans text-brand-muted mb-2">
                 Il tuo nome
               </label>
               <input
@@ -457,7 +457,7 @@ export default function CaricaPage() {
                 onChange={(e) => setStoryAuthorName(e.target.value)}
                 disabled={isAnonymous}
                 required={!isAnonymous}
-                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans disabled:opacity-40 disabled:cursor-not-allowed"
                 placeholder="Il tuo nome"
               />
             </div>
@@ -469,7 +469,7 @@ export default function CaricaPage() {
                 onChange={(e) => setIsAnonymous(e.target.checked)}
                 className="w-4 h-4 rounded accent-[#8B7355]"
               />
-              <span className="font-dm-sans text-sm text-[#8E8E93]">
+              <span className="font-dm-sans text-sm text-brand-muted">
                 Pubblica come anonimo
               </span>
             </label>
@@ -477,13 +477,13 @@ export default function CaricaPage() {
             {/* Tags */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-dm-sans text-[#8E8E93]">
+                <label className="block text-sm font-dm-sans text-brand-muted">
                   Categoria
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowNewTagForm(!showNewTagForm)}
-                  className="text-xs text-[#8B7355] hover:underline flex items-center gap-1"
+                  className="text-xs text-brand-accent hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3 h-3" />
                   Nuova categoria
@@ -504,8 +504,8 @@ export default function CaricaPage() {
                     aria-pressed={selectedTags.includes(tag.id)}
                     className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors ${
                       selectedTags.includes(tag.id)
-                        ? "bg-[#8B7355] text-white"
-                        : "bg-[#F5F0EB] text-[#8E8E93] hover:border-[#C4A882] border border-transparent"
+                        ? "bg-brand-accent text-white"
+                        : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
                     }`}
                   >
                     {tag.icon} {tag.name}
@@ -520,14 +520,14 @@ export default function CaricaPage() {
                     onChange={(e) => setNewTagName(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleCreateTag(e as unknown as React.FormEvent))}
                     placeholder="Nome categoria"
-                    className="flex-1 px-3 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-sm font-dm-sans"
+                    className="flex-1 px-3 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none text-sm font-dm-sans"
                     maxLength={20}
                     autoFocus
                   />
                   <select
                     value={newTagIcon}
                     onChange={(e) => setNewTagIcon(e.target.value)}
-                    className="px-2 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-lg"
+                    className="px-2 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none text-lg"
                   >
                     {["😀","😃","😄","😁","😆","😅","🤣","😂","🙂","😊","😇","🥰","😍","🤩","😘","😗","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤮","🤧","🥵","🥶","🥴","😵","🤯","🤠","🥳","😎","🤓","🧐","😕","😟","🙁","😮","😯","😲","😳","🥺","😦","😧","😨","😰","😥","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖","😺","😸","😹","😻","😼","😽","🙀","😿","😾","🙈","🙉","🙊","💋","💌","💘","💝","💖","💗","💓","💞","💕","💟","❣️","💔","❤️","🧡","💛","💚","💙","💜","🤎","🖤","🤍","💯","💢","💥","💫","💦","💨","🕳️","💣","💬","👋","🤚","🖐️","✋","🖖","👌","🤌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾","🦿","🦵","🦶","👂","🦻","👃","🧠","🫀","🫁","🦷","🦴","👀","👁️","👅","👄","👶","🧒","👦","👧","🧑","👱","👨","🧔","👩","🧓","👴","👵","🙍","🙎","🙅","🙆","💁","🙋","🧏","🙇","🤦","🤷","👮","🕵️","💂","🥷","👷","🤴","👸","👳","👲","🧕","🤵","👰","🤰","🤱","👼","🎒","🎓","👑","📿","💄","💍","💎","🐵","🐒","🦍","🦧","🐶","🐕","🦮","🐩","🐺","🦊","🦝","🐱","🐈","🦁","🐯","🐅","🐆","🐴","🐎","🦄","🦓","🦌","🦬","🐮","🐂","🐃","🐄","🐷","🐖","🐗","🐽","🐏","🐑","🐐","🐪","🐫","🦒","🦘","🦬","🐭","🐹","🐰","🐇","🐿️","🦔","🦇","🐻","🐻‍❄️","🐨","🐼","🦥","🦦","🦨","🦘","🦡","🐾","🦃","🐔","🐓","🐣","🐤","🐥","🐦","🐧","🕊️","🦅","🦆","🦢","🦉","🦤","🪶","🦩","🦚","🦜","🪽","🐦‍⬛","🪿","🦆","🐸","🐊","🐢","🦎","🐍","🐲","🐉","🦕","🦖","🐳","🐋","🐬","🦭","🐟","🐠","🐡","🐙","🦑","🦐","🦞","🦀","🪼","🦂","🕷️","🕸️","🦟","🪰","🪱","🦋","🐌","🐛","🐜","🐝","🪲","🐞","🦗","🪳","🦽","🦼","🩼","🩺","🩻","🏋️","🤼","🤸","⛹️","🤺","🤾","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🧗","🚵","🚴","🧘","🏋️","🧜","🛀","🛁","🛎️","🚿","🛁","🛀","🧴","🧷","🧹","🧺","🧻","🪮","🧽","🧿","🧹","🧺","🪣","🧼","🫧","🪥","🧴","🧷","🧶","🪡","🧵","🪢","🧶","🧵","🪡","🧺","🧻","🧼","🫧","🪥","🧴","🧷","🧹","🧺","🧻","🧽","🧿","🧻","🧹","🧺","🪣","🧼","🫧","🪥","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🌋","🗻","🏔","⛰️","⛳","🗾","🗼","🗽","⛩️","⛪","🕌","🛕","🌐","🌎","🌍","🌏","🪨","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘","🌙","🌚","🌛","🌜","🌡️","☀️","🌝","🌞","🪐","⭐","🌟","✨","💫","☁️","⛅","⛈️","🌤","🌥","🌦","🌧","⛈️","🌩","🌨","☁️","❄️","☃️","⛄","🌬","💨","🌪","🌫","🌀","🌈","🌂","☂️","🌧","⛈️","🌩","⚡","🌪","🌫","🌀","🌂","☂️","🌧","⛈️","🌩","⚡","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚨","🚔","🚍","🚘","🚖","🚡","🚠","🚟","🚃","🚋","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","✈️","🛫","🛬","🛩️","💺","🛰️","🚀","🛸","🚁","🛶","⛵","🚤","🛥️","🛳️","⛴️","🚢","⚓","🪝","⛽","🚧","🚦","🚥","🚏","🗺️","🗿","🗽","🗼","🏰","🏯","🏟","🎡","🎢","🎠","⛲","⛺","🎪","🎭","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻","🎲","♟️","🎯","🎳","🎮","🕹️","🎰","🎱","🪀","🪁","🏏","⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","🏑","🥍","🏏","🥅","⛳","🪁","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","🛷","⛸️","🥌","🎿","⛷️","🏂","🪂","🏋️","🤼","🤸","🤺","🤾","⛹️","🏌️","🏇","🧘","🧗","🏄","🏊","🤽","🚣","🚵","🚴","🏋️","🧜","🛀","🚴","🚵","🏭","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🚂","🚆","🚇","🚊","🚉","🚝","🚞","🚄","🚅","🚈","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉"].map((e) => (
                       <option key={e} value={e}>{e}</option>
@@ -537,14 +537,14 @@ export default function CaricaPage() {
                     type="button"
                     onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
                     disabled={creatingTag || !newTagName.trim()}
-                    className="px-3 py-2 bg-[#8B7355] text-white rounded-lg hover:bg-[#7A6455] transition-colors disabled:opacity-50 text-sm"
+                    className="px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-colors disabled:opacity-50 text-sm"
                   >
                     {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
                   </button>
                   <button
                     type="button"
                     onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
-                    className="p-2 text-[#8E8E93] hover:text-[#B05050]"
+                    className="p-2 text-brand-muted hover:text-brand-danger"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -555,7 +555,7 @@ export default function CaricaPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-[#8B7355] text-white rounded-xl font-dm-sans font-medium hover:bg-[#7A6455] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-brand-accent text-white rounded-xl font-dm-sans font-medium hover:bg-brand-accent/80 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               {loading ? "Invio in corso..." : "Invia racconto"}

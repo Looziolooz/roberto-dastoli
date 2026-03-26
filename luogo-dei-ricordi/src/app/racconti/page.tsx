@@ -64,10 +64,10 @@ export default function RaccontiPage() {
     <div className="space-y-8 pt-8">
       <ScrollReveal>
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-semibold text-[#2C2C2E] font-cormorant">
+          <h1 className="text-4xl font-semibold text-brand-text font-cormorant">
             Racconti
           </h1>
-          <p className="text-[#8E8E93] font-dm-sans max-w-lg mx-auto">
+          <p className="text-brand-muted font-dm-sans max-w-lg mx-auto">
             Le parole che portano il suo ricordo alive
           </p>
         </div>
@@ -81,8 +81,8 @@ export default function RaccontiPage() {
               onClick={() => setSelectedTag(null)}
               className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors ${
                 selectedTag === null
-                  ? "bg-[#8B7355] text-white"
-                  : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#8B7355]"
+                  ? "bg-brand-accent text-white"
+                  : "bg-white text-brand-muted border border-brand-border hover:border-[#8B7355]"
               }`}
             >
               Tutti
@@ -93,8 +93,8 @@ export default function RaccontiPage() {
                 onClick={() => setSelectedTag(tag.id === selectedTag ? null : tag.id)}
                 className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors ${
                   selectedTag === tag.id
-                    ? "bg-[#8B7355] text-white"
-                    : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#8B7355]"
+                    ? "bg-brand-accent text-white"
+                    : "bg-white text-brand-muted border border-brand-border hover:border-[#8B7355]"
                 }`}
               >
                 {tag.icon} {tag.name}
@@ -105,11 +105,11 @@ export default function RaccontiPage() {
       )}
 
       {loading ? (
-        <div className="text-center py-12 text-[#8E8E93]">Caricamento...</div>
+        <div className="text-center py-12 text-brand-muted">Caricamento...</div>
       ) : filteredStories.length === 0 ? (
-        <div className="text-center py-12 text-[#8E8E93]">
+        <div className="text-center py-12 text-brand-muted">
           {selectedTag ? "Nessun racconto in questa categoria." : "Nessun racconto ancora."}{" "}
-          <a href="/carica" className="text-[#8B7355] hover:underline">
+          <a href="/carica" className="text-brand-accent hover:underline">
             Scrivi il primo
           </a>
         </div>
@@ -118,17 +118,17 @@ export default function RaccontiPage() {
           {filteredStories.map((story, index) => (
             <ScrollReveal key={story.id} delay={index * 0.1}>
               <button
-                className="w-full text-left bg-white rounded-xl p-6 shadow-sm border border-[#E5DFD7] hover:border-[#8B7355] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B7355] focus-visible:ring-offset-2"
+                className="w-full text-left bg-white rounded-xl p-6 shadow-sm border border-brand-border hover:border-[#8B7355] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2"
                 onClick={() => setSelectedStory(story)}
                 aria-label={`Leggi racconto: ${story.title}`}
               >
-                <h3 className="text-xl font-semibold text-[#2C2C2E] font-cormorant mb-2">
+                <h3 className="text-xl font-semibold text-brand-text font-cormorant mb-2">
                   {story.title}
                 </h3>
-                <p className="text-[#2C2C2E] font-cormorant line-clamp-3 mb-4">
+                <p className="text-brand-text font-cormorant line-clamp-3 mb-4">
                   {story.body}
                 </p>
-                <div className="flex items-center justify-between text-sm text-[#8E8E93] font-dm-sans">
+                <div className="flex items-center justify-between text-sm text-brand-muted font-dm-sans">
                   <span>
                     {story.is_anonymous ? "Anonimo" : story.author_name}
                   </span>
@@ -141,7 +141,7 @@ export default function RaccontiPage() {
                     {story.story_tags.map((st) => (
                       <span
                         key={st.tag_id}
-                        className="text-xs bg-[rgba(139,115,85,0.08)] px-2 py-0.5 rounded-full"
+                        className="text-xs bg-brand-accent-soft px-2 py-0.5 rounded-full"
                       >
                         {st.tags.icon} {st.tags.name}
                       </span>
@@ -170,7 +170,7 @@ export default function RaccontiPage() {
             <button
               autoFocus
               onClick={closeModal}
-              className="absolute top-4 right-4 p-1.5 rounded-full text-[#8E8E93] hover:bg-[#F5F0EB] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8B7355] transition-colors"
+              className="absolute top-4 right-4 p-1.5 rounded-full text-brand-muted hover:bg-brand-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent transition-colors"
               aria-label="Chiudi"
             >
               <X className="w-5 h-5" />
@@ -182,16 +182,16 @@ export default function RaccontiPage() {
             >
               {selectedStory.title}
             </h2>
-            <div className="prose prose-lg font-cormorant text-[#2C2C2E] whitespace-pre-wrap leading-relaxed">
+            <div className="prose prose-lg font-cormorant text-brand-text whitespace-pre-wrap leading-relaxed">
               {selectedStory.body}
             </div>
-            <div className="mt-6 pt-4 border-t border-[#E5DFD7] space-y-3">
+            <div className="mt-6 pt-4 border-t border-brand-border space-y-3">
               {selectedStory.story_tags && selectedStory.story_tags.length > 0 && (
                 <div className="flex gap-2 flex-wrap">
                   {selectedStory.story_tags.map((st) => (
                     <span
                       key={st.tag_id}
-                      className="bg-[rgba(139,115,85,0.08)] px-3 py-1 rounded-full text-sm"
+                      className="bg-brand-accent-soft px-3 py-1 rounded-full text-sm"
                     >
                       {st.tags.icon} {st.tags.name}
                     </span>
@@ -199,13 +199,13 @@ export default function RaccontiPage() {
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <span className="text-[#8E8E93] font-dm-sans">
+                <span className="text-brand-muted font-dm-sans">
                   di{" "}
                   {selectedStory.is_anonymous
                     ? "Anonimo"
                     : selectedStory.author_name}
                 </span>
-                <span className="text-[#8E8E93] font-dm-sans">
+                <span className="text-brand-muted font-dm-sans">
                   {new Date(selectedStory.created_at).toLocaleDateString("it-IT")}
                 </span>
               </div>
