@@ -1,25 +1,40 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
-  const formData = await req.formData();
-  const file = formData.get("file") as File;
+
+  let formData: FormData;
+  try {
+    formData = await req.formData();
+  } catch {
+    return NextResponse.json({ error: "Richiesta non valida" }, { status: 400 });
+  }
+
+  const file = formData.get("file") as File | null;
 
   if (!file) {
-    return NextResponse.json({ error: "Nessun file" }, { status: 400 });
+    return NextResponse.json({ error: "Nessun file ricevuto" }, { status: 400 });
   }
 
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-  if (!allowedTypes.includes(file.type)) {
-    return NextResponse.json({ error: "Formato non supportato" }, { status: 400 });
+  if (!ALLOWED_TYPES.includes(file.type)) {
+    return NextResponse.json(
+      { error: "Formato non supportato. Usa JPG, PNG o WebP." },
+      { status: 400 }
+    );
   }
 
-  if (file.size > 10 * 1024 * 1024) {
-    return NextResponse.json({ error: "File troppo grande (max 10MB)" }, { status: 400 });
+  if (file.size > MAX_SIZE_BYTES) {
+    return NextResponse.json(
+      { error: "File troppo grande (max 10MB)" },
+      { status: 400 }
+    );
   }
 
-  const ext = file.name.split(".").pop();
+  const ext = file.name.split(".").pop() ?? "jpg";
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const filePath = `pending/${fileName}`;
 

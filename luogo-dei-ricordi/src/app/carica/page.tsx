@@ -2,12 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Tag } from "@/types";
+import { Tag, CreateMemoryPayload, CreateStoryPayload, UploadTab } from "@/types";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText, Loader2, CheckCircle, X, Plus } from "lucide-react";
+
+const EMOJI_OPTIONS = [
+  "😀","😢","❤️","🤗","🥰","😴","😎","😊","🌟","💫","⭐","🌈","☀️","🌧️","❄️","🌙","🌊","🏔️","🌲","🌸","🍃","🏖️","🎿","🎂","🎓","🎉","🎊","🎈","🎁","🏠","👨‍👩‍👧‍👦","👫","🏃","⚽","🎸","🎤","🎬","🎨","📚","✈️","🚗","🏕️","🌄","🌅","🌇","🌃","🎆","🎇","🕯️","🍕","🍝","🍦","☕","🍷","🍾","🎵","💃","🏋️","🚴","🏊","🎯","🎲","🎮","📸","🖼️","💌","🌹","🌻","🌺","🌼","🏵️","🍀","🦋","🐚","🐬","🐳","🦅","🦉","🐺","🦌","🦄","🐎","🐑","🐓","🐕","🐈","🦔","🦎","🐞","🌷","🌱","🌿","🍃","🌾","🍅","🍊","🍋","🍓","🍒","🍑","🍇","🍏","🍎","🥬","🥦","🥔","🍞","🥐","🧀","🥚","🍔","🌮","🍜","🍝","🍱","🍣","🍦","🍨","🍧","🎂","🍰","🍭","🍬","🍫","🍿","🍩","☕","🍵","🧃","🍶","🍺","🍻","🥂","🍷","🥃","🍹","🍸","🎄","🎃","🎅","🎁","🎀","🎊","🎉","🎈","🏆","🥇","🎖️","🎟️","🎫","🎠","🎡","🎢","🎪","🎭","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻","🎲","♟️","🎯","🎳","🕹️","🎰","🏀","⚽","🏈","⚾","🎾","🏐","🏉","🥏","🏓","🏸","🏒","🥅","⛳","🏹","🎣","🥊","🥋","🛹","⛸️","🥌","🎿","⛷️","🏂","🏋️","🤼","🤸","🤾","⛹️","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🧗","🚵","🚴","🛀"
+];
 
 export default function CaricaPage() {
-  const [activeTab, setActiveTab] = useState<"memory" | "story">("memory");
+  const [activeTab, setActiveTab] = useState<UploadTab>("memory");
   const [tags, setTags] = useState<Tag[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -26,23 +30,65 @@ export default function CaricaPage() {
   const [storyAuthorName, setStoryAuthorName] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
 
+  // New tag form
+  const [showNewTagForm, setShowNewTagForm] = useState(false);
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagIcon, setNewTagIcon] = useState("🏷️");
+  const [creatingTag, setCreatingTag] = useState(false);
+
   useEffect(() => {
     const fetchTags = async () => {
       const supabase = createClient();
-      const { data } = await supabase.from("tags").select("*").order("created_at", { ascending: true });
-      setTags(data || []);
+      const { data } = await supabase
+        .from("tags")
+        .select("*")
+        .order("created_at", { ascending: true });
+      setTags(data ?? []);
     };
     fetchTags();
   }, []);
 
+  const handleCreateTag = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTagName.trim()) return;
+    setCreatingTag(true);
+
+    const res = await fetch("/api/tags", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newTagName.trim(), icon: newTagIcon }),
+    });
+
+    if (res.ok) {
+      const tag = await res.json();
+      setTags((prev) => [...prev, tag]);
+      setSelectedTags((prev) => [...prev, tag.id]);
+      setNewTagName("");
+      setNewTagIcon("🏷️");
+      setShowNewTagForm(false);
+    }
+    setCreatingTag(false);
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    // client-side validation
+    if (file.size > 10 * 1024 * 1024) {
+      setError("Il file è troppo grande (max 10MB).");
+      return;
     }
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      setError("Formato non supportato. Usa JPG, PNG o WebP.");
+      return;
+    }
+    setError("");
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
   };
 
   const uploadImage = async (file: File): Promise<string | null> => {
@@ -50,36 +96,57 @@ export default function CaricaPage() {
     formData.append("file", file);
     const res = await fetch("/api/upload", { method: "POST", body: formData });
     const data = await res.json();
-    return data.url || null;
+    if (!res.ok) throw new Error(data.error ?? "Errore upload");
+    return data.url ?? null;
+  };
+
+  const resetMemoryForm = () => {
+    setCaption("");
+    setAuthorName("");
+    setImageFile(null);
+    setImagePreview(null);
+    setSelectedTags([]);
+  };
+
+  const resetStoryForm = () => {
+    setTitle("");
+    setStoryBody("");
+    setStoryAuthorName("");
+    setIsAnonymous(false);
   };
 
   const handleMemorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess(false);
 
     try {
-      let imageUrl = null;
-      if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
-      }
+      let image_url: string | null = null;
+      if (imageFile) image_url = await uploadImage(imageFile);
+
+      const payload: CreateMemoryPayload = {
+        caption,
+        author_name: authorName,
+        image_url,
+        tag_ids: selectedTags,
+      };
 
       const res = await fetch("/api/memories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ caption, author_name: authorName, image_url: imageUrl, tag_ids: selectedTags }),
+        body: JSON.stringify(payload),
       });
-
-      if (!res.ok) throw new Error("Errore nel caricamento");
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Errore nel caricamento");
+      }
 
       setSuccess(true);
-      setCaption("");
-      setAuthorName("");
-      setImageFile(null);
-      setImagePreview(null);
-      setSelectedTags([]);
-    } catch {
-      setError("Errore durante il caricamento. Riprova.");
+      resetMemoryForm();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Errore durante il caricamento.");
     } finally {
       setLoading(false);
     }
@@ -89,23 +156,32 @@ export default function CaricaPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setSuccess(false);
 
     try {
+      const payload: CreateStoryPayload = {
+        title,
+        body: storyBody,
+        author_name: storyAuthorName,
+        is_anonymous: isAnonymous,
+        tag_ids: selectedTags,
+      };
+
       const res = await fetch("/api/stories", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, body: storyBody, author_name: storyAuthorName, is_anonymous: isAnonymous }),
+        body: JSON.stringify(payload),
       });
-
-      if (!res.ok) throw new Error("Errore nel caricamento");
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error ?? "Errore nel caricamento");
+      }
 
       setSuccess(true);
-      setTitle("");
-      setStoryBody("");
-      setStoryAuthorName("");
-      setIsAnonymous(false);
-    } catch {
-      setError("Errore durante il caricamento. Riprova.");
+      resetStoryForm();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Errore durante il caricamento.");
     } finally {
       setLoading(false);
     }
@@ -114,190 +190,375 @@ export default function CaricaPage() {
   return (
     <div className="space-y-8 pt-8">
       <ScrollReveal>
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-semibold text-[#2C2C2E] font-cormorant">Condividi un ricordo</h1>
-          <p className="text-[#8E8E93] font-dm-sans">
-            Ogni contributo rende questo luogo più ricco
+        <div className="text-center space-y-3">
+          <h1 className="text-4xl font-semibold text-[#2C2C2E] font-cormorant">
+            Condividi un ricordo
+          </h1>
+          <p className="text-[#8E8E93] font-dm-sans max-w-md mx-auto text-sm leading-relaxed">
+            Ogni contributo rende questo luogo più ricco. Le foto e i racconti
+            saranno visibili dopo l'approvazione.
           </p>
         </div>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.2}>
+      {/* Tab switcher */}
+      <ScrollReveal delay={0.1}>
         <div className="flex justify-center gap-2">
           <button
-            onClick={() => setActiveTab("memory")}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-dm-sans transition-colors ${
+            onClick={() => { setActiveTab("memory"); setSuccess(false); setError(""); }}
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-dm-sans text-sm transition-all ${
               activeTab === "memory"
-                ? "bg-[#8B7355] text-white"
-                : "bg-white text-[#8E8E93] border border-[#E5DFD7]"
+                ? "bg-[#8B7355] text-white shadow-sm"
+                : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#C4A882]"
             }`}
           >
             <Upload className="w-4 h-4" />
-            Carica una foto
+            Foto
           </button>
           <button
-            onClick={() => setActiveTab("story")}
-            className={`flex items-center gap-2 px-5 py-3 rounded-lg font-dm-sans transition-colors ${
+            onClick={() => { setActiveTab("story"); setSuccess(false); setError(""); }}
+            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-dm-sans text-sm transition-all ${
               activeTab === "story"
-                ? "bg-[#8B7355] text-white"
-                : "bg-white text-[#8E8E93] border border-[#E5DFD7]"
+                ? "bg-[#8B7355] text-white shadow-sm"
+                : "bg-white text-[#8E8E93] border border-[#E5DFD7] hover:border-[#C4A882]"
             }`}
           >
             <FileText className="w-4 h-4" />
-            Scrivi un racconto
+            Racconto
           </button>
         </div>
       </ScrollReveal>
 
+      {/* Feedback banners */}
       {success && (
-        <div className="bg-[rgba(91,140,90,0.1)] border border-[#5B8C5A] text-[#5B8C5A] px-6 py-4 rounded-lg text-center font-dm-sans">
-          Grazie! Il tuo contributo è stato inviato e sarà visibile dopo l'approvazione.
+        <div className="bg-[rgba(91,140,90,0.1)] border border-[#5B8C5A] text-[#5B8C5A] px-6 py-4 rounded-xl flex items-center gap-3 font-dm-sans max-w-xl mx-auto">
+          <CheckCircle className="w-5 h-5 flex-shrink-0" />
+          <span>Grazie! Il tuo contributo è stato inviato e sarà visibile dopo l'approvazione.</span>
         </div>
       )}
-
       {error && (
-        <div className="bg-[rgba(176,80,80,0.1)] border border-[#B05050] text-[#B05050] px-6 py-4 rounded-lg text-center font-dm-sans">
-          {error}
+        <div className="bg-[rgba(176,80,80,0.1)] border border-[#B05050] text-[#B05050] px-6 py-4 rounded-xl flex items-center gap-3 font-dm-sans max-w-xl mx-auto">
+          <X className="w-5 h-5 flex-shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
-      {activeTab === "memory" ? (
-        <ScrollReveal delay={0.3}>
-          <form onSubmit={handleMemorySubmit} className="max-w-xl mx-auto space-y-6">
+      {/* ── Memory form ── */}
+      {activeTab === "memory" && (
+        <ScrollReveal delay={0.15}>
+          <form
+            onSubmit={handleMemorySubmit}
+            className="max-w-xl mx-auto space-y-5 bg-white rounded-2xl p-7 shadow-sm border border-[#E5DFD7]"
+          >
+            {/* Image drop zone */}
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">Foto (opzionale)</label>
-              <div className="border-2 border-dashed border-[#E5DFD7] rounded-xl p-8 text-center hover:border-[#8B7355] transition-colors">
+              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
+                Foto <span className="text-[#C4A882]">(opzionale)</span>
+              </label>
+              <div className="border-2 border-dashed border-[#E5DFD7] rounded-xl overflow-hidden hover:border-[#C4A882] transition-colors">
                 {imagePreview ? (
-                  <div className="relative w-full h-48">
-                    <img src={imagePreview} alt="Preview" className="w-full h-full object-contain rounded-lg" />
+                  <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-contain bg-[#F5F0EB]"
+                    />
                     <button
                       type="button"
                       onClick={() => { setImageFile(null); setImagePreview(null); }}
-                      className="absolute top-2 right-2 bg-[#B05050] text-white rounded-full p-1"
+                      className="absolute top-2 right-2 bg-[#B05050] text-white rounded-full w-7 h-7 flex items-center justify-center hover:bg-[#9A4040] transition-colors"
+                      aria-label="Rimuovi foto"
                     >
-                      ×
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
-                  <label className="cursor-pointer">
-                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                    <Upload className="w-10 h-10 mx-auto text-[#8E8E93] mb-2" />
-                    <p className="text-sm text-[#8E8E93] font-dm-sans">Clicca per caricare una foto</p>
+                  <label className="cursor-pointer flex flex-col items-center justify-center py-10 px-4 gap-2">
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <Upload className="w-8 h-8 text-[#C4A882]" />
+                    <span className="text-sm text-[#8E8E93] font-dm-sans text-center">
+                      Clicca per caricare
+                      <br />
+                      <span className="text-xs opacity-60">JPG, PNG, WebP — max 10MB</span>
+                    </span>
                   </label>
                 )}
               </div>
             </div>
 
+            {/* Caption */}
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">Descrizione</label>
+              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
+                Descrizione <span className="text-[#B05050]">*</span>
+              </label>
               <textarea
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 required
                 rows={3}
-                className="w-full px-4 py-3 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg"
-                placeholder="Racconta cosa sta succedendo in questa foto..."
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg resize-none"
+                placeholder="Racconta cosa sta succedendo..."
               />
             </div>
 
+            {/* Author */}
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">Il tuo nome</label>
+              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
+                Il tuo nome <span className="text-[#B05050]">*</span>
+              </label>
               <input
                 type="text"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans"
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans"
                 placeholder="Il tuo nome"
               />
             </div>
 
+            {/* Tags */}
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">Categoria</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-dm-sans text-[#8E8E93]">
+                  Categoria
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowNewTagForm(!showNewTagForm)}
+                  className="text-xs text-[#8B7355] hover:underline flex items-center gap-1"
+                >
+                  <Plus className="w-3 h-3" />
+                  Nuova categoria
+                </button>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
                   <button
                     key={tag.id}
                     type="button"
-                    onClick={() => setSelectedTags(prev => prev.includes(tag.id) ? prev.filter(id => id !== tag.id) : [...prev, tag.id])}
+                    onClick={() =>
+                      setSelectedTags((prev) =>
+                        prev.includes(tag.id)
+                          ? prev.filter((id) => id !== tag.id)
+                          : [...prev, tag.id]
+                      )
+                    }
+                    aria-pressed={selectedTags.includes(tag.id)}
                     className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors ${
                       selectedTags.includes(tag.id)
                         ? "bg-[#8B7355] text-white"
-                        : "bg-white text-[#8E8E93] border border-[#E5DFD7]"
+                        : "bg-[#F5F0EB] text-[#8E8E93] hover:border-[#C4A882] border border-transparent"
                     }`}
                   >
                     {tag.icon} {tag.name}
                   </button>
                 ))}
               </div>
+              {showNewTagForm && (
+                <div className="mt-3 flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleCreateTag(e as unknown as React.FormEvent))}
+                    placeholder="Nome categoria"
+                    className="flex-1 px-3 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-sm font-dm-sans"
+                    maxLength={20}
+                    autoFocus
+                  />
+                  <select
+                    value={newTagIcon}
+                    onChange={(e) => setNewTagIcon(e.target.value)}
+                    className="px-2 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-lg"
+                  >
+                    {["😀","😃","😄","😁","😆","😅","🤣","😂","🙂","😊","😇","🥰","😍","🤩","😘","😗","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤮","🤧","🥵","🥶","🥴","😵","🤯","🤠","🥳","😎","🤓","🧐","😕","😟","🙁","😮","😯","😲","😳","🥺","😦","😧","😨","😰","😥","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖","😺","😸","😹","😻","😼","😽","🙀","😿","😾","🙈","🙉","🙊","💋","💌","💘","💝","💖","💗","💓","💞","💕","💟","❣️","💔","❤️","🧡","💛","💚","💙","💜","🤎","🖤","🤍","💯","💢","💥","💫","💦","💨","🕳️","💣","💬","👋","🤚","🖐️","✋","🖖","👌","🤌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾","🦿","🦵","🦶","👂","🦻","👃","🧠","🫀","🫁","🦷","🦴","👀","👁️","👅","👄","👶","🧒","👦","👧","🧑","👱","👨","🧔","👩","🧓","👴","👵","🙍","🙎","🙅","🙆","💁","🙋","🧏","🙇","🤦","🤷","👮","🕵️","💂","🥷","👷","🤴","👸","👳","👲","🧕","🤵","👰","🤰","🤱","👼","🎒","🎓","👑","📿","💄","💍","💎","🐵","🐒","🦍","🦧","🐶","🐕","🦮","🐩","🐺","🦊","🦝","🐱","🐈","🦁","🐯","🐅","🐆","🐴","🐎","🦄","🦓","🦌","🦬","🐮","🐂","🐃","🐄","🐷","🐖","🐗","🐽","🐏","🐑","🐐","🐪","🐫","🦒","🦘","🦬","🐭","🐹","🐰","🐇","🐿️","🦔","🦇","🐻","🐻‍❄️","🐨","🐼","🦥","🦦","🦨","🦘","🦡","🐾","🦃","🐔","🐓","🐣","🐤","🐥","🐦","🐧","🕊️","🦅","🦆","🦢","🦉","🦤","🪶","🦩","🦚","🦜","🪽","🐦‍⬛","🪿","🦆","🐸","🐊","🐢","🦎","🐍","🐲","🐉","🦕","🦖","🐳","🐋","🐬","🦭","🐟","🐠","🐡","🐙","🦑","🦐","🦞","🦀","🪼","🦂","🕷️","🕸️","🦟","🪰","🪱","🦋","🐌","🐛","🐜","🐝","🪲","🐞","🦗","🪳","🦽","🦼","🩼","🩺","🩻","🏋️","🤼","🤸","⛹️","🤺","🤾","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🧗","🚵","🚴","🧘","🏋️","🧜","🛀","🛁","🛎️","🚿","🛁","🛀","🧴","🧷","🧹","🧺","🧻","🪮","🧽","🧿","🧹","🧺","🪣","🧼","🫧","🪥","🧴","🧷","🧶","🪡","🧵","🪢","🧶","🧵","🪡","🧺","🧻","🧼","🫧","🪥","🧴","🧷","🧹","🧺","🧻","🧽","🧿","🧻","🧹","🧺","🪣","🧼","🫧","🪥","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🌋","🗻","🏔","⛰️","⛳","🗾","🗼","🗽","⛩️","⛪","🕌","🛕","🌐","🌎","🌍","🌏","🪨","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘","🌙","🌚","🌛","🌜","🌡️","☀️","🌝","🌞","🪐","⭐","🌟","✨","💫","☁️","⛅","⛈️","🌤","🌥","🌦","🌧","⛈️","🌩","🌨","☁️","❄️","☃️","⛄","🌬","💨","🌪","🌫","🌀","🌈","🌂","☂️","🌧","⛈️","🌩","⚡","🌪","🌫","🌀","🌂","☂️","🌧","⛈️","🌩","⚡","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚨","🚔","🚍","🚘","🚖","🚡","🚠","🚟","🚃","🚋","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","✈️","🛫","🛬","🛩️","💺","🛰️","🚀","🛸","🚁","🛶","⛵","🚤","🛥️","🛳️","⛴️","🚢","⚓","🪝","⛽","🚧","🚦","🚥","🚏","🗺️","🗿","🗽","🗼","🏰","🏯","🏟","🎡","🎢","🎠","⛲","⛺","🎪","🎭","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻","🎲","♟️","🎯","🎳","🎮","🕹️","🎰","🎱","🪀","🪁","🏏","⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","🏑","🥍","🏏","🥅","⛳","🪁","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","🛷","⛸️","🥌","🎿","⛷️","🏂","🪂","🏋️","🤼","🤸","🤺","🤾","⛹️","🏌️","🏇","🧘","🧗","🏄","🏊","🤽","🚣","🚵","🚴","🏋️","🧜","🛀","🚴","🚵","🏭","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🚂","🚆","🚇","🚊","🚉","🚝","🚞","🚄","🚅","🚈","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉"].map((e) => (
+                      <option key={e} value={e}>{e}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
+                    disabled={creatingTag || !newTagName.trim()}
+                    className="px-3 py-2 bg-[#8B7355] text-white rounded-lg hover:bg-[#7A6455] transition-colors disabled:opacity-50 text-sm"
+                  >
+                    {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
+                    className="p-2 text-[#8E8E93] hover:text-[#B05050]"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-[#8B7355] text-white rounded-lg font-dm-sans font-medium hover:bg-[#7A6455] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-[#8B7355] text-white rounded-xl font-dm-sans font-medium hover:bg-[#7A6455] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              Invia ricordo
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {loading ? "Invio in corso..." : "Invia foto"}
             </button>
           </form>
         </ScrollReveal>
-      ) : (
-        <ScrollReveal delay={0.3}>
-          <form onSubmit={handleStorySubmit} className="max-w-xl mx-auto space-y-6">
+      )}
+
+      {/* ── Story form ── */}
+      {activeTab === "story" && (
+        <ScrollReveal delay={0.15}>
+          <form
+            onSubmit={handleStorySubmit}
+            className="max-w-xl mx-auto space-y-5 bg-white rounded-2xl p-7 shadow-sm border border-[#E5DFD7]"
+          >
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">Titolo</label>
+              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
+                Titolo <span className="text-[#B05050]">*</span>
+              </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg"
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg"
                 placeholder="Dai un titolo al tuo racconto"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">Racconto</label>
+              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
+                Racconto <span className="text-[#B05050]">*</span>
+              </label>
               <textarea
                 value={storyBody}
                 onChange={(e) => setStoryBody(e.target.value)}
                 required
-                rows={8}
-                className="w-full px-4 py-3 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg"
+                rows={9}
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-cormorant text-lg resize-none"
                 placeholder="Scrivi il tuo ricordo..."
               />
             </div>
 
             <div>
-              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">Il tuo nome</label>
+              <label className="block text-sm font-dm-sans text-[#8E8E93] mb-2">
+                Il tuo nome
+              </label>
               <input
                 type="text"
                 value={storyAuthorName}
                 onChange={(e) => setStoryAuthorName(e.target.value)}
                 disabled={isAnonymous}
-                className="w-full px-4 py-3 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans disabled:opacity-50"
+                required={!isAnonymous}
+                className="w-full px-4 py-3 rounded-xl border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none font-dm-sans disabled:opacity-40 disabled:cursor-not-allowed"
                 placeholder="Il tuo nome"
               />
             </div>
 
-            <label className="flex items-center gap-3 cursor-pointer">
+            <label className="flex items-center gap-3 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={isAnonymous}
                 onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="w-5 h-5 rounded border-[#E5DFD7] text-[#8B7355] focus:ring-[#8B7355]"
+                className="w-4 h-4 rounded accent-[#8B7355]"
               />
-              <span className="font-dm-sans text-[#8E8E93]">Pubblica come anonimo</span>
+              <span className="font-dm-sans text-sm text-[#8E8E93]">
+                Pubblica come anonimo
+              </span>
             </label>
+
+            {/* Tags */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-dm-sans text-[#8E8E93]">
+                  Categoria
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setShowNewTagForm(!showNewTagForm)}
+                  className="text-xs text-[#8B7355] hover:underline flex items-center gap-1"
+                >
+                  <Plus className="w-3 h-3" />
+                  Nuova categoria
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() =>
+                      setSelectedTags((prev) =>
+                        prev.includes(tag.id)
+                          ? prev.filter((id) => id !== tag.id)
+                          : [...prev, tag.id]
+                      )
+                    }
+                    aria-pressed={selectedTags.includes(tag.id)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors ${
+                      selectedTags.includes(tag.id)
+                        ? "bg-[#8B7355] text-white"
+                        : "bg-[#F5F0EB] text-[#8E8E93] hover:border-[#C4A882] border border-transparent"
+                    }`}
+                  >
+                    {tag.icon} {tag.name}
+                  </button>
+                ))}
+              </div>
+              {showNewTagForm && (
+                <div className="mt-3 flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={newTagName}
+                    onChange={(e) => setNewTagName(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleCreateTag(e as unknown as React.FormEvent))}
+                    placeholder="Nome categoria"
+                    className="flex-1 px-3 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-sm font-dm-sans"
+                    maxLength={20}
+                    autoFocus
+                  />
+                  <select
+                    value={newTagIcon}
+                    onChange={(e) => setNewTagIcon(e.target.value)}
+                    className="px-2 py-2 rounded-lg border border-[#E5DFD7] focus:border-[#8B7355] focus:outline-none text-lg"
+                  >
+                    {["😀","😃","😄","😁","😆","😅","🤣","😂","🙂","😊","😇","🥰","😍","🤩","😘","😗","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤮","🤧","🥵","🥶","🥴","😵","🤯","🤠","🥳","😎","🤓","🧐","😕","😟","🙁","😮","😯","😲","😳","🥺","😦","😧","😨","😰","😥","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖","😺","😸","😹","😻","😼","😽","🙀","😿","😾","🙈","🙉","🙊","💋","💌","💘","💝","💖","💗","💓","💞","💕","💟","❣️","💔","❤️","🧡","💛","💚","💙","💜","🤎","🖤","🤍","💯","💢","💥","💫","💦","💨","🕳️","💣","💬","👋","🤚","🖐️","✋","🖖","👌","🤌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾","🦿","🦵","🦶","👂","🦻","👃","🧠","🫀","🫁","🦷","🦴","👀","👁️","👅","👄","👶","🧒","👦","👧","🧑","👱","👨","🧔","👩","🧓","👴","👵","🙍","🙎","🙅","🙆","💁","🙋","🧏","🙇","🤦","🤷","👮","🕵️","💂","🥷","👷","🤴","👸","👳","👲","🧕","🤵","👰","🤰","🤱","👼","🎒","🎓","👑","📿","💄","💍","💎","🐵","🐒","🦍","🦧","🐶","🐕","🦮","🐩","🐺","🦊","🦝","🐱","🐈","🦁","🐯","🐅","🐆","🐴","🐎","🦄","🦓","🦌","🦬","🐮","🐂","🐃","🐄","🐷","🐖","🐗","🐽","🐏","🐑","🐐","🐪","🐫","🦒","🦘","🦬","🐭","🐹","🐰","🐇","🐿️","🦔","🦇","🐻","🐻‍❄️","🐨","🐼","🦥","🦦","🦨","🦘","🦡","🐾","🦃","🐔","🐓","🐣","🐤","🐥","🐦","🐧","🕊️","🦅","🦆","🦢","🦉","🦤","🪶","🦩","🦚","🦜","🪽","🐦‍⬛","🪿","🦆","🐸","🐊","🐢","🦎","🐍","🐲","🐉","🦕","🦖","🐳","🐋","🐬","🦭","🐟","🐠","🐡","🐙","🦑","🦐","🦞","🦀","🪼","🦂","🕷️","🕸️","🦟","🪰","🪱","🦋","🐌","🐛","🐜","🐝","🪲","🐞","🦗","🪳","🦽","🦼","🩼","🩺","🩻","🏋️","🤼","🤸","⛹️","🤺","🤾","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🧗","🚵","🚴","🧘","🏋️","🧜","🛀","🛁","🛎️","🚿","🛁","🛀","🧴","🧷","🧹","🧺","🧻","🪮","🧽","🧿","🧹","🧺","🪣","🧼","🫧","🪥","🧴","🧷","🧶","🪡","🧵","🪢","🧶","🧵","🪡","🧺","🧻","🧼","🫧","🪥","🧴","🧷","🧹","🧺","🧻","🧽","🧿","🧻","🧹","🧺","🪣","🧼","🫧","🪥","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🏠","🏡","🏢","🏣","🏤","🏥","🏦","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🌋","🗻","🏔","⛰️","⛳","🗾","🗼","🗽","⛩️","⛪","🕌","🛕","🌐","🌎","🌍","🌏","🪨","🌑","🌒","🌓","🌔","🌕","🌖","🌗","🌘","🌙","🌚","🌛","🌜","🌡️","☀️","🌝","🌞","🪐","⭐","🌟","✨","💫","☁️","⛅","⛈️","🌤","🌥","🌦","🌧","⛈️","🌩","🌨","☁️","❄️","☃️","⛄","🌬","💨","🌪","🌫","🌀","🌈","🌂","☂️","🌧","⛈️","🌩","⚡","🌪","🌫","🌀","🌂","☂️","🌧","⛈️","🌩","⚡","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🚗","🚕","🚙","🚌","🚎","🏎️","🚓","🚑","🚒","🚐","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚨","🚔","🚍","🚘","🚖","🚡","🚠","🚟","🚃","🚋","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","✈️","🛫","🛬","🛩️","💺","🛰️","🚀","🛸","🚁","🛶","⛵","🚤","🛥️","🛳️","⛴️","🚢","⚓","🪝","⛽","🚧","🚦","🚥","🚏","🗺️","🗿","🗽","🗼","🏰","🏯","🏟","🎡","🎢","🎠","⛲","⛺","🎪","🎭","🎨","🎬","🎤","🎧","🎼","🎹","🥁","🎷","🎺","🎸","🪕","🎻","🎲","♟️","🎯","🎳","🎮","🕹️","🎰","🎱","🪀","🪁","🏏","⚽","🏀","🏈","⚾","🥎","🎾","🏐","🏉","🥏","🎱","🪀","🏓","🏸","🏒","🏑","🥍","🏏","🥅","⛳","🪁","🏹","🎣","🤿","🥊","🥋","🎽","🛹","🛼","🛷","⛸️","🥌","🎿","⛷️","🏂","🪂","🏋️","🤼","🤸","🤺","🤾","⛹️","🏌️","🏇","🧘","🧗","🏄","🏊","🤽","🚣","🚵","🚴","🏋️","🧜","🛀","🚴","🚵","🏭","🏨","🏩","🏪","🏫","🏬","🏭","🏯","🏰","💒","🗼","🗽","⛪","🕌","🛕","🕍","⛩️","⛲","⛺","🌁","🌄","🌅","🌆","🌇","🌉","♨️","🎠","🛝","🎡","🎢","💈","🎪","🛖","🏘","🏚","🏗","🏭","🚂","🚆","🚇","🚊","🚉","🚝","🚞","🚄","🚅","🚈","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉","🚅","🚄","🚝","🚞","🚂","🚃","🚋","🚎","🚐","🚑","🚒","🚓","🚔","🚕","🚖","🚗","🚘","🚙","🛻","🚚","🚛","🚜","🏍️","🛵","🚲","🛴","🛺","🚏","🛣️","🛤️","🛤️","🚞","🚝","🚄","🚅","🚈","🚂","🚆","🚇","🚊","🚉"].map((e) => (
+                      <option key={e} value={e}>{e}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
+                    disabled={creatingTag || !newTagName.trim()}
+                    className="px-3 py-2 bg-[#8B7355] text-white rounded-lg hover:bg-[#7A6455] transition-colors disabled:opacity-50 text-sm"
+                  >
+                    {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
+                    className="p-2 text-[#8E8E93] hover:text-[#B05050]"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-[#8B7355] text-white rounded-lg font-dm-sans font-medium hover:bg-[#7A6455] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-[#8B7355] text-white rounded-xl font-dm-sans font-medium hover:bg-[#7A6455] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-              Invia racconto
+              {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {loading ? "Invio in corso..." : "Invia racconto"}
             </button>
           </form>
         </ScrollReveal>

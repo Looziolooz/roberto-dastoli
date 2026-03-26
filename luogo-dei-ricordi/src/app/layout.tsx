@@ -18,15 +18,39 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
+// seo-specialist: full metadata with OpenGraph for sharing
 export const metadata: Metadata = {
-  title: "Luogo dei Ricordi",
-  description: "Uno spazio per i ricordi che non sbiadiscono mai",
+  title: {
+    default: "Roberto Dastoli",
+    template: "%s — Roberto Dastoli",
+  },
+  description:
+    "Uno spazio intimo per conservare e condividere i ricordi di chi amiamo. Foto, racconti e momenti che non svaniscono mai.",
+  keywords: ["ricordi", "memoriale", "famiglia", "foto", "racconto"],
+  openGraph: {
+    title: "Roberto Dastoli",
+    description: "Uno spazio dove i ricordi diventano immortali.",
+    type: "website",
+    locale: "it_IT",
+  },
+  robots: {
+    // seo-specialist: private memorial — no public indexing
+    index: false,
+    follow: false,
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="it" className={`${cormorant.variable} ${dmSans.variable}`}>
-      <body suppressHydrationWarning className="bg-[#F5F0EB] text-[#2C2C2E] min-h-screen flex flex-col font-cormorant">
+      <body
+        suppressHydrationWarning
+        className="bg-[#F5F0EB] text-[#2C2C2E] min-h-screen flex flex-col font-cormorant"
+      >
         <Header />
         <main className="flex-1 max-w-[1100px] mx-auto px-6 pb-16 w-full">
           {children}

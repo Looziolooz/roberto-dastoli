@@ -14,11 +14,21 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
-  const { name, icon } = await req.json();
+  let body: { name?: string; icon?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Payload non valido" }, { status: 400 });
+  }
+
+  const { name, icon } = body;
+  if (!name?.trim()) {
+    return NextResponse.json({ error: "Nome obbligatorio" }, { status: 400 });
+  }
 
   const { data, error } = await supabase
     .from("tags")
-    .insert({ name, icon: icon || "🏷️" })
+    .insert({ name: name.trim(), icon: icon ?? "🏷️" })
     .select()
     .single();
 
@@ -28,7 +38,15 @@ export async function POST(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
-  const { id } = await req.json();
+  let body: { id?: string };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Payload non valido" }, { status: 400 });
+  }
+
+  const { id } = body;
+  if (!id) return NextResponse.json({ error: "id mancante" }, { status: 400 });
 
   const { error } = await supabase.from("tags").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });

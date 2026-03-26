@@ -25,6 +25,7 @@ body {
   color: var(--foreground);
 }
 
+/* Masonry grid for gallery */
 @layer utilities {
   .masonry {
     column-count: 3;

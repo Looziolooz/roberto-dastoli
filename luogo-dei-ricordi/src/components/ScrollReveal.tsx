@@ -8,7 +8,11 @@ interface ScrollRevealProps {
   className?: string;
 }
 
-export function ScrollReveal({ children, delay = 0, className = "" }: ScrollRevealProps) {
+export function ScrollReveal({
+  children,
+  delay = 0,
+  className = "",
+}: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -23,7 +27,7 @@ export function ScrollReveal({ children, delay = 0, className = "" }: ScrollReve
           observer.unobserve(el);
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
 
     observer.observe(el);
@@ -36,8 +40,8 @@ export function ScrollReveal({ children, delay = 0, className = "" }: ScrollReve
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(24px)",
-        transition: `all 0.6s ease ${delay}s`,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity 0.55s ease ${delay}s, transform 0.55s ease ${delay}s`,
       }}
     >
       {children}

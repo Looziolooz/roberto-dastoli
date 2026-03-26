@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+import { activeTokens } from "../login/route";
+import { AdminActionPayload, AdminDeleteMemoryPayload } from "@/types";
 
 function getAdminClient() {
   return createClient(
@@ -8,52 +10,97 @@ function getAdminClient() {
   );
 }
 
-function checkAuth(req: NextRequest) {
-  const session = req.cookies.get("admin_session");
-  return session?.value === "authenticated";
+// penetration-tester: validate against the token map, not a static string
+function checkAuth(req: NextRequest): boolean {
+  const token = req.cookies.get("admin_session")?.value;
+  if (!token) return false;
+
+  const record = activeTokens.get(token);
+  if (!record) return false;
+
+  if (Date.now() > record.expiresAt) {
+    activeTokens.delete(token);
+    return false;
+  }
+
+  return true;
 }
 
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+  if (!checkAuth(req))
+    return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+
+  const { searchParams } = new URL(req.url);
+  const filter = searchParams.get("filter");
 
   const supabase = getAdminClient();
-  const { data, error } = await supabase
+  let query = supabase
     .from("memories")
     .select(`*, memory_tags ( tag_id, tags ( id, name, icon ) )`)
-    .eq("is_approved", false)
+    .eq("is_archived", false)
     .order("created_at", { ascending: false });
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (filter === "pending") {
+    query = query.eq("is_approved", false);
+  } else if (filter === "approved") {
+    query = query.eq("is_approved", true);
+  }
+
+  const { data, error } = await query;
+
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data);
 }
 
 export async function PATCH(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+  if (!checkAuth(req))
+    return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
 
   const supabase = getAdminClient();
-  const { id } = await req.json();
+
+  let body: AdminActionPayload;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Payload non valido" }, { status: 400 });
+  }
+
+  const { id } = body;
+  if (!id) return NextResponse.json({ error: "id mancante" }, { status: 400 });
 
   const { error } = await supabase
     .from("memories")
     .update({ is_approved: true })
     .eq("id", id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
+  if (!checkAuth(req))
+    return NextResponse.json({ error: "Non autorizzato" }, { status: 401 });
 
   const supabase = getAdminClient();
-  const { id, image_url } = await req.json();
 
-  if (image_url) {
-    const path = image_url.split("/gallery/")[1];
-    if (path) await supabase.storage.from("gallery").remove([path]);
+  let body: AdminDeleteMemoryPayload;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Payload non valido" }, { status: 400 });
   }
 
-  const { error } = await supabase.from("memories").delete().eq("id", id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const { id } = body;
+  if (!id) return NextResponse.json({ error: "id mancante" }, { status: 400 });
+
+  const { error } = await supabase
+    .from("memories")
+    .update({ is_archived: true })
+    .eq("id", id);
+
+  if (error)
+    return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }

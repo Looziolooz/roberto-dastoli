@@ -1,18 +1,13 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
+import { CreateMemoryPayload } from "@/types";
 
 export async function GET() {
   const supabase = await createServerSupabaseClient();
 
   const { data, error } = await supabase
     .from("memories")
-    .select(`
-      *,
-      memory_tags (
-        tag_id,
-        tags ( id, name, icon )
-      )
-    `)
+    .select(`*, memory_tags ( tag_id, tags ( id, name, icon ) )`)
     .eq("is_approved", true)
     .order("created_at", { ascending: false });
 
@@ -22,13 +17,23 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
-  const body = await req.json();
+
+  let body: CreateMemoryPayload;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Payload non valido" }, { status: 400 });
+  }
 
   const { caption, author_name, image_url, tag_ids } = body;
 
+  if (!caption?.trim() || !author_name?.trim()) {
+    return NextResponse.json({ error: "Campi obbligatori mancanti" }, { status: 400 });
+  }
+
   const { data: memory, error: memError } = await supabase
     .from("memories")
-    .insert({ caption, author_name, image_url, is_approved: false })
+    .insert({ caption, author_name, image_url: image_url ?? null, is_approved: false })
     .select()
     .single();
 
@@ -39,7 +44,6 @@ export async function POST(req: NextRequest) {
       memory_id: memory.id,
       tag_id,
     }));
-
     await supabase.from("memory_tags").insert(tagLinks);
   }
 
