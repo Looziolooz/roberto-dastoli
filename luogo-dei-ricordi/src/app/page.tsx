@@ -1,6 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { HeroSection } from "@/components/HeroSection";
+import { AnimatedCard } from "@/components/AnimatedCard";
+import { motion } from "framer-motion";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 // frontend-design: memorial homepage — warm, intimate, Italian aesthetic
@@ -36,55 +39,7 @@ export default async function Home() {
   return (
     <div className="space-y-0">
       {/* ── Hero ── */}
-      <ScrollReveal>
-        <section className="relative h-screen overflow-hidden w-screen max-w-[100vw] -mx-[calc(50vw-50%)]">
-          <Image
-              src="/photos/06-ritratto-teen.jpg"
-              alt="Roberto"
-              fill
-              className="object-cover grayscale"
-              style={{ objectPosition: "50% 20%" }}
-              priority
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-gray-900/80" />
-          <div className="relative z-10 flex flex-col items-center justify-center text-center pb-12 px-6 h-full">
-            <div className="inline-flex items-center gap-2 mb-6">
-              <div className="w-8 h-px bg-white/80" />
-              <span className="text-white text-sm font-dm-sans tracking-[0.25em] uppercase" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}>
-                per sempre con noi
-              </span>
-              <div className="w-8 h-px bg-white/80" />
-            </div>
-            <h1 className="text-6xl md:text-8xl font-semibold text-white font-cormorant leading-tight mb-4" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.7)" }}>
-              Roberto Dastoli
-            </h1>
-            <p className="text-xl md:text-2xl text-white max-w-xl font-cormorant italic mb-10 leading-relaxed" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}>
-              Uno spazio dove i ricordi diventano immortali
-            </p>
-            <div className="flex flex-wrap gap-3 justify-center">
-              <Link
-                href="/storia"
-                className="px-6 py-3 bg-white text-brand-text rounded-lg font-dm-sans font-medium hover:bg-white/90 transition-all hover:shadow-lg"
-              >
-                La sua storia
-              </Link>
-              <Link
-                href="/galleria"
-                className="px-6 py-3 border-2 border-white text-white rounded-lg font-dm-sans font-medium hover:bg-white/20 transition-all backdrop-blur-sm"
-              >
-                Galleria
-              </Link>
-              <Link
-                href="/carica"
-                className="px-6 py-3 bg-brand-accent text-white rounded-lg font-dm-sans font-medium hover:bg-brand-accent/80 transition-all hover:shadow-md"
-              >
-                Condividi un ricordo
-              </Link>
-            </div>
-          </div>
-        </section>
-      </ScrollReveal>
+      <HeroSection />
 
       <div className="space-y-16 pt-16">
         {/* ── Stats ── */}
@@ -120,7 +75,16 @@ export default async function Home() {
 
         {/* ── Navigation cards ── */}
         <ScrollReveal delay={0.2}>
-          <section className="grid md:grid-cols-3 gap-4">
+          <motion.section
+            className="grid md:grid-cols-3 gap-4"
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.1 } },
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+          >
             {[
               {
                 href: "/storia",
@@ -141,23 +105,32 @@ export default async function Home() {
                 desc: "Le parole di chi lo ha voluto bene — storie, aneddoti, pensieri.",
               },
             ].map(({ href, icon, title, desc }) => (
-              <Link
+              <motion.div
                 key={href}
-                href={href}
-                className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border hover:border-brand-accent-light hover:shadow-md transition-all group block"
+                variants={{
+                  hidden: { opacity: 0, y: 30 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] } },
+                }}
               >
-                <div className="text-2xl mb-3 opacity-70 group-hover:opacity-100 transition-opacity">
-                  {icon}
-                </div>
-                <h3 className="text-lg font-semibold text-brand-text font-cormorant mb-2 group-hover:text-brand-accent transition-colors">
-                  {title}
-                </h3>
-                <p className="text-sm text-brand-muted font-dm-sans leading-relaxed">
-                  {desc}
-                </p>
-              </Link>
+                <AnimatedCard>
+                  <Link
+                    href={href}
+                    className="bg-white rounded-2xl p-6 shadow-sm border border-brand-border hover:border-brand-accent-light hover:shadow-md transition-all group block"
+                  >
+                    <div className="text-2xl mb-3 opacity-70 group-hover:opacity-100 transition-opacity">
+                      {icon}
+                    </div>
+                    <h3 className="text-lg font-semibold text-brand-text font-cormorant mb-2 group-hover:text-brand-accent transition-colors">
+                      {title}
+                    </h3>
+                    <p className="text-sm text-brand-muted font-dm-sans leading-relaxed">
+                      {desc}
+                    </p>
+                  </Link>
+                </AnimatedCard>
+              </motion.div>
             ))}
-          </section>
+          </motion.section>
         </ScrollReveal>
 
         {/* ── Latest story ── */}

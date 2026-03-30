@@ -6,6 +6,7 @@ import { Tag, MemoryWithTags, MemoryTagJoin } from "@/types";
 import Image from "next/image";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function GalleriaPage() {
   const [memories, setMemories] = useState<MemoryWithTags[]>([]);
@@ -122,16 +123,16 @@ export default function GalleriaPage() {
           {filteredMemories.map((memory, index) => (
             <ScrollReveal key={memory.id} delay={index * 0.05}>
               <div className="mb-4 break-inside-avoid">
-                {/* accessibility-tester: button role + aria-label for screen readers */}
-                <button
-                  className="w-full text-left cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 rounded-xl"
+                <motion.button
+                  className="w-full text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2 rounded-xl"
                   onClick={() => setSelectedImage(memory)}
                   aria-label={`Apri foto: ${memory.caption} di ${memory.author_name}`}
+                  whileHover={{ y: -4 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 >
-                  <div className="relative rounded-xl overflow-hidden bg-white shadow-sm border border-brand-border">
+                  <div className="relative rounded-xl overflow-hidden bg-white shadow-sm border border-brand-border transition-shadow duration-300 group-hover:shadow-xl group-hover:shadow-brand-accent/10">
                     {memory.image_url ? (
-                      // senior-react-specialist: priority only on first 3 images,
-                      // sizes for responsive layout, loading="lazy" for the rest
                       <Image
                         src={memory.image_url}
                         alt={memory.caption}
@@ -147,8 +148,18 @@ export default function GalleriaPage() {
                         <span className="text-4xl text-brand-accent">✦</span>
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
+                    <motion.div
+                      className="absolute bottom-0 left-0 right-0 p-4"
+                      initial={{ y: 12, opacity: 0 }}
+                      whileHover={{ y: 0, opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
                       <p className="text-white font-cormorant text-sm line-clamp-2">
                         {memory.caption}
                       </p>
@@ -162,9 +173,9 @@ export default function GalleriaPage() {
                           </span>
                         ))}
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
-                </button>
+                </motion.button>
               </div>
             </ScrollReveal>
           ))}
@@ -178,66 +189,82 @@ export default function GalleriaPage() {
           - Escape key handled in useEffect above
           - Background scroll locked
           ---------------------------------------------------------------- */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-          onClick={closeModal}
-        >
-          <div
-            className="bg-white rounded-xl max-w-2xl w-full p-6 relative"
-            onClick={(e) => e.stopPropagation()}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={closeModal}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
           >
-            {/* accessibility-tester: autofocus close button so keyboard users land here */}
-            <button
-              autoFocus
-              onClick={closeModal}
-              className="absolute top-4 right-4 p-1.5 rounded-full text-brand-muted hover:bg-brand-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent transition-colors"
-              aria-label="Chiudi"
+            <motion.div
+              className="absolute inset-0 bg-black/75 backdrop-blur-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+            <motion.div
+              className="relative bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl"
+              initial={{ opacity: 0, scale: 0.92, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.92, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              onClick={(e) => e.stopPropagation()}
             >
-              <X className="w-5 h-5" />
-            </button>
+              <button
+                autoFocus
+                onClick={closeModal}
+                className="absolute top-4 right-4 p-1.5 rounded-full text-brand-muted hover:bg-brand-bg focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent transition-colors z-10"
+                aria-label="Chiudi"
+              >
+                <X className="w-5 h-5" />
+              </button>
 
-            {selectedImage.image_url && (
-              <div className="relative w-full h-64 mb-4 rounded-lg overflow-hidden">
-                <Image
-                  src={selectedImage.image_url}
-                  alt={selectedImage.caption}
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 768px) 100vw, 672px"
-                  priority
-                />
+              {selectedImage.image_url && (
+                <div className="relative w-full h-64 mb-4 rounded-lg overflow-hidden">
+                  <Image
+                    src={selectedImage.image_url}
+                    alt={selectedImage.caption}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 768px) 100vw, 672px"
+                    priority
+                  />
+                </div>
+              )}
+
+              <div className="p-6 pt-0">
+                <h3
+                  id="modal-title"
+                  className="text-xl font-semibold font-cormorant mb-2"
+                >
+                  {selectedImage.caption}
+                </h3>
+                <p className="text-sm text-brand-muted font-dm-sans mb-4">
+                  di {selectedImage.author_name}
+                </p>
+
+                {selectedImage.memory_tags && selectedImage.memory_tags.length > 0 && (
+                  <div className="flex gap-2 flex-wrap">
+                    {selectedImage.memory_tags.map((mt: MemoryTagJoin) => (
+                      <span
+                        key={mt.tag_id}
+                        className="bg-brand-accent-soft px-3 py-1 rounded-full text-sm"
+                      >
+                        {mt.tags.icon} {mt.tags.name}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-
-            <h3
-              id="modal-title"
-              className="text-xl font-semibold font-cormorant mb-2"
-            >
-              {selectedImage.caption}
-            </h3>
-            <p className="text-sm text-brand-muted font-dm-sans mb-4">
-              di {selectedImage.author_name}
-            </p>
-
-            {selectedImage.memory_tags && selectedImage.memory_tags.length > 0 && (
-              <div className="flex gap-2 flex-wrap">
-                {selectedImage.memory_tags.map((mt: MemoryTagJoin) => (
-                  <span
-                    key={mt.tag_id}
-                    className="bg-brand-accent-soft px-3 py-1 rounded-full text-sm"
-                  >
-                    {mt.tags.icon} {mt.tags.name}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

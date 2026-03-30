@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { motion } from "framer-motion";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -42,13 +43,20 @@ export function Header() {
               key={link.href}
               href={link.href}
               className={clsx(
-                "px-3.5 py-2 text-sm rounded-lg font-dm-sans transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent",
+                "relative px-3.5 py-2 text-sm rounded-lg font-dm-sans transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent",
                 pathname === link.href
                   ? "text-brand-accent bg-brand-accent-soft font-medium"
                   : "text-brand-muted hover:text-brand-accent"
               )}
             >
               {link.label}
+              {pathname === link.href && (
+                <motion.div
+                  className="absolute bottom-0.5 left-3.5 right-3.5 h-0.5 rounded-full bg-brand-accent"
+                  layoutId="nav-underline"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
             </Link>
           ))}
           {/* Admin link — subtle, always last */}

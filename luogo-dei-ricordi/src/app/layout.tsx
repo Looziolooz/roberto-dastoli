@@ -3,6 +3,7 @@ import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { SmoothScroll } from "@/components/SmoothScroll";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -51,6 +52,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className="bg-brand-bg text-brand-text min-h-screen flex flex-col font-cormorant"
       >
+        <SmoothScroll />
         <Header />
         <main className="flex-1 max-w-[1100px] mx-auto px-6 pb-16 w-full">
           {children}
