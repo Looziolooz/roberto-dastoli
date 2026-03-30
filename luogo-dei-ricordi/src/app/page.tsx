@@ -37,9 +37,8 @@ export default async function Home() {
     <div className="space-y-0">
       {/* ── Hero ── */}
       <ScrollReveal>
-        <section className="relative h-[65vh] overflow-hidden -mx-6">
-          <div className="absolute inset-0">
-            <Image
+        <section className="relative h-screen overflow-hidden w-screen max-w-[100vw] -mx-[calc(50vw-50%)]">
+          <Image
               src="/photos/06-ritratto-teen.jpg"
               alt="Roberto"
               fill
@@ -48,26 +47,19 @@ export default async function Home() {
               priority
               sizes="100vw"
             />
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.6) 70%, rgba(245,240,235,1) 100%)",
-              }}
-            />
-          </div>
-          <div className="relative z-10 flex flex-col items-center justify-end text-center pb-16 px-6 h-full">
-            <div className="inline-flex items-center gap-2 mb-4">
-              <div className="w-8 h-px bg-white opacity-70" />
-              <span className="text-white text-sm font-dm-sans tracking-widest uppercase drop-shadow-md">
+            <div className="absolute inset-0 bg-gray-900/80" />
+          <div className="relative z-10 flex flex-col items-center justify-center text-center pb-12 px-6 h-full">
+            <div className="inline-flex items-center gap-2 mb-6">
+              <div className="w-8 h-px bg-white/80" />
+              <span className="text-white text-sm font-dm-sans tracking-[0.25em] uppercase" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}>
                 per sempre con noi
               </span>
-              <div className="w-8 h-px bg-white opacity-70" />
+              <div className="w-8 h-px bg-white/80" />
             </div>
-            <h1 className="text-5xl md:text-7xl font-semibold text-white font-cormorant leading-tight mb-4 drop-shadow-lg">
+            <h1 className="text-6xl md:text-8xl font-semibold text-white font-cormorant leading-tight mb-4" style={{ textShadow: "0 4px 20px rgba(0,0,0,0.7)" }}>
               Roberto Dastoli
             </h1>
-            <p className="text-xl text-white/90 max-w-xl font-cormorant italic mb-8 leading-relaxed drop-shadow-md">
+            <p className="text-xl md:text-2xl text-white max-w-xl font-cormorant italic mb-10 leading-relaxed" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.8)" }}>
               Uno spazio dove i ricordi diventano immortali
             </p>
             <div className="flex flex-wrap gap-3 justify-center">
@@ -79,7 +71,7 @@ export default async function Home() {
               </Link>
               <Link
                 href="/galleria"
-                className="px-6 py-3 border-2 border-white text-white rounded-lg font-dm-sans font-medium hover:bg-white/20 transition-all"
+                className="px-6 py-3 border-2 border-white text-white rounded-lg font-dm-sans font-medium hover:bg-white/20 transition-all backdrop-blur-sm"
               >
                 Galleria
               </Link>

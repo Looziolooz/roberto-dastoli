@@ -58,8 +58,23 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Payload non valido" }, { status: 400 });
   }
 
-  const { id, type, action } = body;
-  if (!id || !type) return NextResponse.json({ error: "Dati mancanti" }, { status: 400 });
+  const { id, action } = body;
+  // Try to determine type from the id by checking both tables
+  let type = body.type;
+  
+  if (!id) return NextResponse.json({ error: "ID mancante" }, { status: 400 });
+  
+  // If type not provided, try to determine it
+  if (!type) {
+    const { data: memory } = await supabase.from("memories").select("id").eq("id", id).single();
+    if (memory) type = "memory";
+    else {
+      const { data: story } = await supabase.from("stories").select("id").eq("id", id).single();
+      if (story) type = "story";
+    }
+  }
+  
+  if (!type) return NextResponse.json({ error: "Tipo non trovato" }, { status: 400 });
 
   const table = type === "memory" ? "memories" : "stories";
 
