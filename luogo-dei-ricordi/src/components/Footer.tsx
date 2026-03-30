@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Sparkles, Heart } from "lucide-react";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -31,13 +32,13 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="flex items-center justify-center gap-3 text-xs text-brand-muted font-dm-sans">
-          <span>✦</span>
+          <Sparkles className="w-3 h-3 text-brand-accent" />
           <span>Un luogo dedicato a chi non dimentichiamo mai</span>
-          <span>✦</span>
+          <Sparkles className="w-3 h-3 text-brand-accent" />
         </div>
         <div className="flex items-center justify-center gap-1 text-xs text-brand-muted font-dm-sans mt-3">
           <span>Fatto con</span>
-          <span>❤️</span>
+          <Heart className="w-3 h-3 text-brand-accent" />
           <span>da</span>
           <a
             href="https://www.facebook.com/looziolooz/"

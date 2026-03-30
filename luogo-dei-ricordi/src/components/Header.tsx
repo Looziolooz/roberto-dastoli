@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sparkles, Settings } from "lucide-react";
 import { motion } from "framer-motion";
 
 const NAV_LINKS = [
@@ -30,7 +30,7 @@ export function Header() {
           className="flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent rounded"
           onClick={() => setMobileOpen(false)}
         >
-          <span className="text-lg text-brand-accent">✦</span>
+          <Sparkles className="w-5 h-5 text-brand-accent" />
           <span className="text-xl font-semibold tracking-wide font-cormorant">
             Roberto Dastoli
           </span>
@@ -68,7 +68,7 @@ export function Header() {
             )}
             aria-label="Pannello admin"
           >
-            ⚙
+            <Settings className="w-4 h-4" />
           </Link>
         </nav>
 
