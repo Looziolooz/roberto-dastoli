@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Tag } from "@/types";
 import { Plus, X, Loader2 } from "lucide-react";
-import { EMOJI_OPTIONS } from "@/lib/tag-icons";
+import { TAG_ICONS } from "@/lib/tag-icons";
 
 interface TagSelectorProps {
   selectedTags: string[];
@@ -21,7 +21,6 @@ export function TagSelector({
   const [tags, setTags] = useState<Tag[]>([]);
   const [showNewTagForm, setShowNewTagForm] = useState(false);
   const [newTagName, setNewTagName] = useState("");
-  const [newTagIcon, setNewTagIcon] = useState("🏷️");
   const [creatingTag, setCreatingTag] = useState(false);
 
   useEffect(() => {
@@ -39,16 +38,26 @@ export function TagSelector({
     fetchTags();
   }, []);
 
+  const getAutoIcon = (name: string): string => {
+    const normalizedName = name.toLowerCase().trim();
+    const found = TAG_ICONS.find(
+      (t) => t.key === normalizedName || t.name.toLowerCase() === normalizedName
+    );
+    return found ? found.emoji : "🏷️";
+  };
+
   const handleCreateTag = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTagName.trim()) return;
     setCreatingTag(true);
 
+    const icon = getAutoIcon(newTagName);
+
     try {
       const res = await fetch("/api/tags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newTagName.trim(), icon: newTagIcon }),
+        body: JSON.stringify({ name: newTagName.trim(), icon }),
       });
 
       if (res.ok) {
@@ -56,7 +65,6 @@ export function TagSelector({
         setTags((prev) => [...prev, tag]);
         onTagsChange((prev) => [...prev, tag.id]);
         setNewTagName("");
-        setNewTagIcon("🏷️");
         setShowNewTagForm(false);
       }
     } catch (error) {
@@ -123,15 +131,6 @@ export function TagSelector({
             maxLength={20}
             autoFocus
           />
-          <select
-            value={newTagIcon}
-            onChange={(e) => setNewTagIcon(e.target.value)}
-            className="px-2 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none text-lg"
-          >
-            {EMOJI_OPTIONS.map((e) => (
-              <option key={e} value={e}>{e}</option>
-            ))}
-          </select>
           <div className="flex gap-2">
             <button
               type="submit"
@@ -142,7 +141,7 @@ export function TagSelector({
             </button>
             <button
               type="button"
-              onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
+              onClick={() => { setShowNewTagForm(false); setNewTagName(""); }}
               className="p-2 text-brand-muted hover:text-brand-danger"
             >
               <X className="w-4 h-4" />

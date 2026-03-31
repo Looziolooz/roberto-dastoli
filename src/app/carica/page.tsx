@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase/client";
 import { Tag, CreateMemoryPayload, CreateStoryPayload, UploadTab } from "@/types";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Upload, FileText, Loader2, CheckCircle, X, Plus } from "lucide-react";
-import { EMOJI_OPTIONS } from "@/lib/tag-icons";
+import { TAG_ICONS } from "@/lib/tag-icons";
 
-const UNIQUE_EMOJIS = EMOJI_OPTIONS;
+const UNIQUE_EMOJIS = TAG_ICONS.map(t => t.emoji);
 
 export default function CaricaPage() {
   const [activeTab, setActiveTab] = useState<UploadTab>("memory");
@@ -32,8 +32,15 @@ export default function CaricaPage() {
   // New tag form
   const [showNewTagForm, setShowNewTagForm] = useState(false);
   const [newTagName, setNewTagName] = useState("");
-  const [newTagIcon, setNewTagIcon] = useState("🏷️");
   const [creatingTag, setCreatingTag] = useState(false);
+
+  const getAutoIcon = (name: string): string => {
+    const normalizedName = name.toLowerCase().trim();
+    const found = TAG_ICONS.find(
+      (t) => t.key === normalizedName || t.name.toLowerCase() === normalizedName
+    );
+    return found ? found.emoji : "🏷️";
+  };
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -52,11 +59,13 @@ export default function CaricaPage() {
     if (!newTagName.trim()) return;
     setCreatingTag(true);
 
+    const icon = getAutoIcon(newTagName);
+
     try {
       const res = await fetch("/api/tags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newTagName.trim(), icon: newTagIcon }),
+        body: JSON.stringify({ name: newTagName.trim(), icon }),
       });
 
       if (res.ok) {
@@ -64,7 +73,6 @@ export default function CaricaPage() {
         setTags((prev) => [...prev, tag]);
         setSelectedTags((prev) => [...prev, tag.id]);
         setNewTagName("");
-        setNewTagIcon("🏷️");
         setShowNewTagForm(false);
       } else {
         const data = await res.json();
@@ -401,15 +409,6 @@ export default function CaricaPage() {
                     maxLength={20}
                     autoFocus
                   />
-                  <select
-                    value={newTagIcon}
-                    onChange={(e) => setNewTagIcon(e.target.value)}
-                    className="px-2 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none text-lg"
-                  >
-                    {UNIQUE_EMOJIS.map((e) => (
-                      <option key={e} value={e}>{e}</option>
-                    ))}
-                  </select>
                   <div className="flex gap-2">
                     <button
                       type="button"
@@ -421,7 +420,7 @@ export default function CaricaPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
+                      onClick={() => { setShowNewTagForm(false); setNewTagName(""); }}
                       className="p-2 text-brand-muted hover:text-brand-danger"
                     >
                       <X className="w-4 h-4" />
@@ -557,15 +556,6 @@ export default function CaricaPage() {
                     maxLength={20}
                     autoFocus
                   />
-                  <select
-                    value={newTagIcon}
-                    onChange={(e) => setNewTagIcon(e.target.value)}
-                    className="px-2 py-2 rounded-lg border border-brand-border focus:border-brand-accent focus:outline-none text-lg"
-                  >
-                    {UNIQUE_EMOJIS.map((e) => (
-                      <option key={e} value={e}>{e}</option>
-                    ))}
-                  </select>
                   <div className="flex gap-2">
                     <button
                       type="button"
@@ -577,7 +567,7 @@ export default function CaricaPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
+                      onClick={() => { setShowNewTagForm(false); setNewTagName(""); }}
                       className="p-2 text-brand-muted hover:text-brand-danger"
                     >
                       <X className="w-4 h-4" />
