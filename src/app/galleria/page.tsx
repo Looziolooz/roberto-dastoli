@@ -83,14 +83,14 @@ export default function GalleriaPage() {
 
       {/* Tag filters */}
       <ScrollReveal delay={0.1}>
-        <div className="px-4">
-          <div className="flex flex-wrap gap-2 justify-center">
+        <div className="px-4 py-4 bg-white/50 backdrop-blur-sm rounded-2xl mx-4 mb-4">
+          <div className="flex flex-wrap gap-3 justify-center">
             <button
               onClick={() => setSelectedTag(null)}
-              className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all ${
+              className={`px-5 py-2.5 rounded-full text-sm font-dm-sans font-medium transition-all ${
                 selectedTag === null
                   ? "bg-brand-accent text-white shadow-md"
-                  : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent hover:shadow-sm"
+                  : "bg-white text-brand-muted border-2 border-brand-border hover:border-brand-accent hover:shadow-sm"
               }`}
             >
               Tutte
@@ -99,13 +99,14 @@ export default function GalleriaPage() {
               <button
                 key={tag.id}
                 onClick={() => setSelectedTag(tag.id === selectedTag ? null : tag.id)}
-                className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all ${
+                className={`px-5 py-2.5 rounded-full text-sm font-dm-sans font-medium transition-all ${
                   selectedTag === tag.id
                     ? "bg-brand-accent text-white shadow-md"
-                    : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent hover:shadow-sm"
+                    : "bg-white text-brand-muted border-2 border-brand-border hover:border-brand-accent hover:shadow-sm"
                 }`}
               >
-                {tag.icon} {tag.name}
+                <span className="mr-1">{tag.icon}</span>
+                {tag.name}
               </button>
             ))}
           </div>

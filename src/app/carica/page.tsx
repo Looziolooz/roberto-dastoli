@@ -387,8 +387,8 @@ export default function CaricaPage() {
 
             {/* Tags */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-dm-sans text-brand-muted">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-dm-sans text-brand-muted font-medium">
                   Categoria
                 </label>
                 <button
@@ -397,11 +397,11 @@ export default function CaricaPage() {
                   className="text-xs text-brand-accent hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3 h-3" />
-                  Nuova categoria
+                  Nuova
                 </button>
               </div>
-              <div className="overflow-x-auto scrollbar-hide -mx-2 px-2">
-                <div className="flex flex-wrap gap-2 min-w-max pb-2">
+              <div className="px-4 py-4 bg-white/50 backdrop-blur-sm rounded-2xl">
+                <div className="flex flex-wrap gap-3 justify-center">
                   {tags.map((tag) => (
                     <button
                       key={tag.id}
@@ -414,13 +414,14 @@ export default function CaricaPage() {
                         )
                       }
                       aria-pressed={selectedTags.includes(tag.id)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors shrink-0 ${
+                      className={`px-4 py-2 rounded-full text-sm font-dm-sans font-medium transition-colors ${
                         selectedTags.includes(tag.id)
-                          ? "bg-brand-accent text-white"
-                          : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
+                          ? "bg-brand-accent text-white shadow-md"
+                          : "bg-white text-brand-muted border-2 border-brand-border hover:border-brand-accent"
                       }`}
                     >
-                      {tag.icon} {tag.name}
+                      <span className="mr-1">{tag.icon}</span>
+                      {tag.name}
                     </button>
                   ))}
                 </div>
@@ -534,8 +535,8 @@ export default function CaricaPage() {
 
             {/* Tags */}
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-dm-sans text-brand-muted">
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-dm-sans text-brand-muted font-medium">
                   Categoria
                 </label>
                 <button
@@ -544,11 +545,11 @@ export default function CaricaPage() {
                   className="text-xs text-brand-accent hover:underline flex items-center gap-1"
                 >
                   <Plus className="w-3 h-3" />
-                  Nuova categoria
+                  Nuova
                 </button>
               </div>
-              <div className="overflow-x-auto scrollbar-hide -mx-2 px-2">
-                <div className="flex flex-wrap gap-2 min-w-max pb-2">
+              <div className="px-4 py-4 bg-white/50 backdrop-blur-sm rounded-2xl">
+                <div className="flex flex-wrap gap-3 justify-center">
                   {tags.map((tag) => (
                     <button
                       key={tag.id}
@@ -561,13 +562,14 @@ export default function CaricaPage() {
                         )
                       }
                       aria-pressed={selectedTags.includes(tag.id)}
-                      className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors shrink-0 ${
+                      className={`px-4 py-2 rounded-full text-sm font-dm-sans font-medium transition-colors ${
                         selectedTags.includes(tag.id)
-                          ? "bg-brand-accent text-white"
-                          : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
+                          ? "bg-brand-accent text-white shadow-md"
+                          : "bg-white text-brand-muted border-2 border-brand-border hover:border-brand-accent"
                       }`}
                     >
-                      {tag.icon} {tag.name}
+                      <span className="mr-1">{tag.icon}</span>
+                      {tag.name}
                     </button>
                   ))}
                 </div>
