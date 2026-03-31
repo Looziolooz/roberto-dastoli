@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { 
   Check, X, Plus, Trash2, Loader2, Lock, ChevronDown, ChevronUp, 
   Archive, RotateCcw, Image as ImageIcon, FileText, Sparkles, 
-  Camera, BookOpen, FolderArchive, FolderOpen, Star
+  Camera, BookOpen, FolderArchive, FolderOpen, Star, Edit3
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { TAG_ICONS, getTagIconInfo, getLucideIcon } from "@/lib/tag-icons";
@@ -40,6 +40,8 @@ export default function AdminPage() {
   const [retryAfter, setRetryAfter] = useState(0);
   const [tagsExpanded, setTagsExpanded] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const [editingItem, setEditingItem] = useState<{ type: "memory" | "story"; id: string; data: MemoryWithTags | Story } | null>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const checkAuth = async () => {
     setAuthChecking(true);
@@ -229,6 +231,54 @@ export default function AdminPage() {
       body: JSON.stringify({ id, action: "delete" }),
     });
     setArchivedStories((prev) => prev.filter((s) => s.id !== id));
+    setActionLoading(null);
+  };
+
+  const handleEditMemory = (id: string) => {
+    const memory = memories.find((m) => m.id === id);
+    if (!memory) return;
+    setEditingItem({ type: "memory", id, data: memory });
+    setSelectedTags(memory.memory_tags?.map((mt) => mt.tag_id) ?? []);
+  };
+
+  const handleEditStory = (id: string) => {
+    const story = stories.find((s) => s.id === id);
+    if (!story) return;
+    setEditingItem({ type: "story", id, data: story });
+    setSelectedTags(story.story_tags?.map((st) => st.tag_id) ?? []);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingItem) return;
+    setActionLoading(editingItem.id);
+
+    const endpoint = editingItem.type === "memory" ? "/api/admin/memories" : "/api/admin/stories";
+    
+    const payload: { id: string; tag_ids: string[] } & Record<string, unknown> = {
+      id: editingItem.id,
+      tag_ids: selectedTags,
+    };
+
+    if (editingItem.type === "memory") {
+      const mem = editingItem.data as MemoryWithTags;
+      payload.caption = mem.caption;
+      payload.author_name = mem.author_name;
+    } else {
+      const sto = editingItem.data as Story;
+      payload.title = sto.title;
+      payload.body = sto.body;
+      payload.author_name = sto.author_name;
+    }
+
+    await fetch(endpoint, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    await fetchAllData();
+    setEditingItem(null);
+    setSelectedTags([]);
     setActionLoading(null);
   };
 
@@ -539,6 +589,17 @@ export default function AdminPage() {
                             {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                           </button>
                           
+                          {!isArchiveTab && (
+                            <button 
+                              onClick={() => isMemory ? handleEditMemory(item.id) : handleEditStory(item.id)} 
+                              disabled={actionLoading === item.id} 
+                              className="p-2.5 bg-blue-100/80 hover:bg-blue-200/80 text-blue-600 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-lg disabled:opacity-50 backdrop-blur-sm"
+                              title="Modifica"
+                            >
+                              <Edit3 className="w-5 h-5" />
+                            </button>
+                          )}
+                          
                           {!isArchiveTab && !item.is_approved && (
                             <button 
                               onClick={() => isMemory ? handleApproveMemory(item.id) : handleApproveStory(item.id)} 
@@ -665,6 +726,114 @@ export default function AdminPage() {
           )}
         </div>
       </ScrollReveal>
+
+      {/* Edit Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 max-h-[80vh] overflow-y-auto">
+            <h3 className="text-xl font-semibold text-brand-text font-cormorant mb-4">
+              Modifica {editingItem.type === "memory" ? "Foto" : "Racconto"}
+            </h3>
+            
+            <div className="space-y-4">
+              {editingItem.type === "memory" ? (
+                <>
+                  <div>
+                    <label className="block text-sm text-brand-muted mb-1">Didascalie</label>
+                    <textarea
+                      value={(editingItem.data as MemoryWithTags).caption ?? ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, data: { ...editingItem.data, caption: e.target.value } })}
+                      className="w-full px-4 py-2 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
+                      rows={3}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-brand-muted mb-1">Autore</label>
+                    <input
+                      type="text"
+                      value={(editingItem.data as MemoryWithTags).author_name ?? ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, data: { ...editingItem.data, author_name: e.target.value } })}
+                      className="w-full px-4 py-2 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-sm text-brand-muted mb-1">Titolo</label>
+                    <input
+                      type="text"
+                      value={(editingItem.data as Story).title ?? ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, data: { ...editingItem.data, title: e.target.value } })}
+                      className="w-full px-4 py-2 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-brand-muted mb-1">Contenuto</label>
+                    <textarea
+                      value={(editingItem.data as Story).body ?? ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, data: { ...editingItem.data, body: e.target.value } })}
+                      className="w-full px-4 py-2 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
+                      rows={6}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-brand-muted mb-1">Autore</label>
+                    <input
+                      type="text"
+                      value={(editingItem.data as Story).author_name ?? ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, data: { ...editingItem.data, author_name: e.target.value } })}
+                      className="w-full px-4 py-2 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
+                    />
+                  </div>
+                </>
+              )}
+              
+              <div>
+                <label className="block text-sm text-brand-muted mb-2">Categorie</label>
+                <div className="flex flex-wrap gap-2">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() => {
+                        if (selectedTags.includes(tag.id)) {
+                          setSelectedTags(selectedTags.filter((t) => t !== tag.id));
+                        } else {
+                          setSelectedTags([...selectedTags, tag.id]);
+                        }
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors ${
+                        selectedTags.includes(tag.id)
+                          ? "bg-brand-accent text-white"
+                          : "bg-brand-bg text-brand-muted border border-brand-border"
+                      }`}
+                    >
+                      {tag.icon} {tag.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => { setEditingItem(null); setSelectedTags([]); }}
+                className="flex-1 px-4 py-2 bg-gray-100 text-brand-muted rounded-xl hover:bg-gray-200 transition-colors font-dm-sans"
+              >
+                Annulla
+              </button>
+              <button
+                onClick={handleSaveEdit}
+                disabled={actionLoading === editingItem.id}
+                className="flex-1 px-4 py-2 bg-brand-accent text-white rounded-xl hover:bg-brand-accent/80 transition-colors disabled:opacity-50 font-dm-sans"
+              >
+                {actionLoading === editingItem.id ? "Salvataggio..." : "Salva"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
