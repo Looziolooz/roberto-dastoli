@@ -132,6 +132,7 @@ export default function CaricaPage() {
     setImageFile(null);
     setImagePreview(null);
     setSelectedTags([]);
+    setSelectedMemoryAnonymous(false);
   };
 
   const resetStoryForm = () => {
@@ -146,6 +147,18 @@ export default function CaricaPage() {
     setLoading(true);
     setError("");
     setSuccess(false);
+
+    if (!selectedMemoryAnonymous && !authorName.trim()) {
+      setError("Il nome è obbligatorio se non carichi in modo anonimo");
+      setLoading(false);
+      return;
+    }
+
+    if (!caption.trim()) {
+      setError("La descrizione è obbligatoria");
+      setLoading(false);
+      return;
+    }
 
     try {
       let image_url: string | null = null;
@@ -347,21 +360,25 @@ export default function CaricaPage() {
             {/* Author */}
             <div>
               <label className="block text-sm font-dm-sans text-brand-muted mb-2">
-                Il tuo nome <span className="text-brand-danger">*</span>
+                Il tuo nome {!selectedMemoryAnonymous && <span className="text-brand-danger">*</span>}
               </label>
               <input
                 type="text"
                 value={authorName}
                 onChange={(e) => setAuthorName(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
-                placeholder="Il tuo nome"
+                required={!selectedMemoryAnonymous}
+                disabled={selectedMemoryAnonymous}
+                className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans disabled:bg-gray-100 disabled:text-gray-400"
+                placeholder={selectedMemoryAnonymous ? "Anonimo" : "Il tuo nome"}
               />
               <label className="flex items-center gap-2 mt-2 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={selectedMemoryAnonymous}
-                  onChange={(e) => setSelectedMemoryAnonymous(e.target.checked)}
+                  onChange={(e) => {
+                    setSelectedMemoryAnonymous(e.target.checked);
+                    if (e.target.checked) setAuthorName("");
+                  }}
                   className="w-4 h-4 rounded border-brand-border text-brand-accent focus:ring-brand-accent"
                 />
                 <span className="text-sm text-brand-muted font-dm-sans">Carica in modo anonimo</span>
