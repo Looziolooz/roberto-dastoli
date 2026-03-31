@@ -5,10 +5,9 @@ import { createClient } from "@/lib/supabase/client";
 import { Tag, CreateMemoryPayload, CreateStoryPayload, UploadTab } from "@/types";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Upload, FileText, Loader2, CheckCircle, X, Plus } from "lucide-react";
+import { EMOJI_OPTIONS } from "@/lib/tag-icons";
 
-const EMOJI_OPTIONS = ["😀","😢","❤️","🤗","🥰","😴","😎","😊","🌟","💫","⭐","🌈","☀️","🌧️","❄️","🌙","🌊","🏔️","🌲","🌸","🍃","🏖️","🎿","🎂","🎓","🎉","🎊","🎈","🎁","🏠","👨‍👩‍👧‍👦","👫","🏃","⚽","🎸","🎤","🎬","🎨","📚","✈️","🚗","🏕️","🌄","🌅","🌇","🌃","🎆","🎇","🕯️","🍕","🍝","🍦","☕","🍷","🍾","🎵","💃","🏋️","🚴","🏊","🎯","🎲","🎮","📸","🖼️","💌","🌹","🌻","🌺","🌼","🏵️","🍀","🦋","🐚","🐬","🐳","🦅","🦉","🐺","🦌","🦄","🐎","🐑","🐓","🐕","🐈","🦔","🦎","🐞","🌷","🌱","🌿","🌾","🍅","🍊","🍋","🍓","🍒","🍑","🍇","🍏","🍎","🥬","🥦","🥔","🍞","🥐","🧀","🥚","🍔","🌮","🍜","🍱","🍣","🍨","🍧","🍰","🍭","🍬","🍫","🍿","🍩","🍵","🧃","🍶","🍺","🍻","🥂","🥃","🍹","🍸","🎄","🎃","🎅","🎀","🏆","🥇","🎖️","🎟️","🎫","🎠","🎡","🎢","🎪","🎭","🎧","🎼","🎹","🥁","🎷","🎺","🪕","🎻","♟️","🎳","🕹️","🎰","🏀","🏈","⚾","🎾","🏐","🏉","🥏","🏓","🏸","🏒","🥅","⛳","🏹","🎣","🥊","🥋","🛹","⛸️","🥌","⛷️","🏂","🤼","🤸","🤾","⛹️","🏌️","🏇","🧘","🏄","🤽","🚣","🧗","🚵","🛀"];
-
-const UNIQUE_EMOJIS = [...new Set(["😀","😃","😄","😁","😆","😅","🤣","😂","🙂","😊","😇","🥰","😍","🤩","😘","😗","😚","😋","😛","😜","🤪","😝","🤑","🤗","🤭","🤫","🤔","🤐","🤨","😐","😑","😶","😏","😒","🙄","😬","🤥","😌","😔","😪","🤤","😴","😷","🤒","🤕","🤢","🤮","🤧","🥵","🥶","🥴","😵","🤯","🤠","🥳","😎","🤓","🧐","😕","😟","🙁","😮","😯","😲","😳","🥺","😦","😧","😨","😰","😥","😢","😭","😱","😖","😣","😞","😓","😩","😫","🥱","😤","😡","😠","🤬","😈","👿","💀","☠️","💩","🤡","👹","👺","👻","👽","👾","🤖","😺","😸","😹","😻","😼","😽","🙀","😿","😾","🙈","🙉","🙊","💋","💌","💘","💝","💖","💗","💓","💞","💕","💟","❣️","💔","❤️","🧡","💛","💚","💙","💜","🤎","🖤","🤍","💯","💢","💥","💫","💦","💨","🕳️","💣","💬","👋","🤚","🖐️","✋","🖖","👌","🤌","🤏","✌️","🤞","🤟","🤘","🤙","👈","👉","👆","🖕","👇","☝️","👍","👎","✊","👊","🤛","🤜","👏","🙌","👐","🤲","🤝","🙏","✍️","💅","🤳","💪","🦾","🦿","🦵","🦶","👂","🦻","👃","🧠","🫀","🫁","🦷","🦴","👀","👁️","👅","👄","👶","🧒","👦","👧","🧑","👱","👨","🧔","👩","🧓","👴","👵","🙍","🙎","🙅","🙆","💁","🙋","🧏","🙇","🤦","🤷","👮","🕵️","💂","🥷","👷","🤴","👸","👳","👲","🧕","🤵","👰","🤰","🤱","👼","🎒","🎓","👑","📿","💄","💍","💎","🐵","🐒","🦍","🦧","🐶","🐕","🦮","🐩","🐺","🦊","🦝","🐱","🐈","🦁","🐯","🐅","🐆","🐴","🐎","🦄","🦓","🦌","🦬","🐮","🐂","🐃","🐄","🐷","🐖","🐗","🐽","🐏","🐑","🐐","🐪","🐫","🦒","🦘","🦬","🐭","🐹","🐰","🐇","🐿️","🦔","🦇","🐻","🐻‍❄️","🐨","🐼","🦥","🦦","🦨","🦡","🐾","🦃","🐔","🐓","🐣","🐤","🐥","🐦","🐧","🕊️","🦅","🦆","🦢","🦉","🦤","🪶","🦩","🦚","🦜","🪽","🐦‍⬛","🪿","🐸","🐊","🐢","🦎","🐍","🐲","🐉","🦕","🦖","🐳","🐋","🐬","🦭","🐟","🐠","🐡","🐙","🦑","🦐","🦞","🦀","🪼","🦂","🕷️","🕸️","🦟","🪰","🪱","🦋","🐌","🐛","🐜","🐝","🪲","🐞","🦗","🪳","🦽","🦼","🩼","🩺","🩻","🏋️","🤼","🤸","⛹️","🤺","🤾","🏌️","🏇","🧘","🏄","🏊","🤽","🚣","🧗","🚵","🚴","🧜","🛀","🛁","🛎️","🚿","🛀","🧴","🧷","🧹","🧺","🧻","🪮","🧽","🧿","🪣","🧼","🫧","🪥"])];
+const UNIQUE_EMOJIS = EMOJI_OPTIONS;
 
 export default function CaricaPage() {
   const [activeTab, setActiveTab] = useState<UploadTab>("memory");
@@ -53,21 +52,29 @@ export default function CaricaPage() {
     if (!newTagName.trim()) return;
     setCreatingTag(true);
 
-    const res = await fetch("/api/tags", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newTagName.trim(), icon: newTagIcon }),
-    });
+    try {
+      const res = await fetch("/api/tags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newTagName.trim(), icon: newTagIcon }),
+      });
 
-    if (res.ok) {
-      const tag = await res.json();
-      setTags((prev) => [...prev, tag]);
-      setSelectedTags((prev) => [...prev, tag.id]);
-      setNewTagName("");
-      setNewTagIcon("🏷️");
-      setShowNewTagForm(false);
+      if (res.ok) {
+        const tag = await res.json();
+        setTags((prev) => [...prev, tag]);
+        setSelectedTags((prev) => [...prev, tag.id]);
+        setNewTagName("");
+        setNewTagIcon("🏷️");
+        setShowNewTagForm(false);
+      } else {
+        const data = await res.json();
+        setError(data.error ?? "Errore durante la creazione della categoria");
+      }
+    } catch {
+      setError("Connessione fallita. Riprova.");
+    } finally {
+      setCreatingTag(false);
     }
-    setCreatingTag(false);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,10 +101,15 @@ export default function CaricaPage() {
   const uploadImage = async (file: File): Promise<string | null> => {
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error ?? "Errore upload");
-    return data.url ?? null;
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Errore upload");
+      return data.url ?? null;
+    } catch (err) {
+      if (err instanceof Error) throw err;
+      throw new Error("Connessione fallita durante il caricamento dell'immagine");
+    }
   };
 
   const resetMemoryForm = () => {
@@ -146,7 +158,12 @@ export default function CaricaPage() {
       resetMemoryForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore durante il caricamento.");
+      const message = err instanceof Error ? err.message : "Errore durante il caricamento.";
+      if (message === "Failed to fetch" || message.includes("fetch") || message.includes("network")) {
+        setError("Connessione fallita. Il server Supabase non è raggiungibile. Verifica la tua connessione internet.");
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -181,7 +198,12 @@ export default function CaricaPage() {
       resetStoryForm();
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Errore durante il caricamento.");
+      const message = err instanceof Error ? err.message : "Errore durante il caricamento.";
+      if (message === "Failed to fetch" || message.includes("fetch") || message.includes("network")) {
+        setError("Connessione fallita. Il server Supabase non è raggiungibile. Verifica la tua connessione internet.");
+      } else {
+        setError(message);
+      }
     } finally {
       setLoading(false);
     }
@@ -337,31 +359,33 @@ export default function CaricaPage() {
                   Nuova categoria
                 </button>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    onClick={() =>
-                      setSelectedTags((prev) =>
-                        prev.includes(tag.id)
-                          ? prev.filter((id) => id !== tag.id)
-                          : [...prev, tag.id]
-                      )
-                    }
-                    aria-pressed={selectedTags.includes(tag.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors ${
-                      selectedTags.includes(tag.id)
-                        ? "bg-brand-accent text-white"
-                        : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
-                    }`}
-                  >
-                    {tag.icon} {tag.name}
-                  </button>
-                ))}
+              <div className="overflow-x-auto scrollbar-hide -mx-2 px-2">
+                <div className="flex flex-wrap gap-2 min-w-max pb-2">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() =>
+                        setSelectedTags((prev) =>
+                          prev.includes(tag.id)
+                            ? prev.filter((id) => id !== tag.id)
+                            : [...prev, tag.id]
+                        )
+                      }
+                      aria-pressed={selectedTags.includes(tag.id)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors shrink-0 ${
+                        selectedTags.includes(tag.id)
+                          ? "bg-brand-accent text-white"
+                          : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
+                      }`}
+                    >
+                      {tag.icon} {tag.name}
+                    </button>
+                  ))}
+                </div>
               </div>
               {showNewTagForm && (
-                <div className="mt-3 flex gap-2 items-center">
+                <div className="mt-3 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
                   <input
                     type="text"
                     value={newTagName}
@@ -381,21 +405,23 @@ export default function CaricaPage() {
                       <option key={e} value={e}>{e}</option>
                     ))}
                   </select>
-                  <button
-                    type="button"
-                    onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
-                    disabled={creatingTag || !newTagName.trim()}
-                    className="px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-colors disabled:opacity-50 text-sm"
-                  >
-                    {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
-                    className="p-2 text-brand-muted hover:text-brand-danger"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
+                      disabled={creatingTag || !newTagName.trim()}
+                      className="px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-colors disabled:opacity-50 text-sm"
+                    >
+                      {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
+                      className="p-2 text-brand-muted hover:text-brand-danger"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -489,31 +515,33 @@ export default function CaricaPage() {
                   Nuova categoria
                 </button>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    onClick={() =>
-                      setSelectedTags((prev) =>
-                        prev.includes(tag.id)
-                          ? prev.filter((id) => id !== tag.id)
-                          : [...prev, tag.id]
-                      )
-                    }
-                    aria-pressed={selectedTags.includes(tag.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors ${
-                      selectedTags.includes(tag.id)
-                        ? "bg-brand-accent text-white"
-                        : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
-                    }`}
-                  >
-                    {tag.icon} {tag.name}
-                  </button>
-                ))}
+              <div className="overflow-x-auto scrollbar-hide -mx-2 px-2">
+                <div className="flex flex-wrap gap-2 min-w-max pb-2">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() =>
+                        setSelectedTags((prev) =>
+                          prev.includes(tag.id)
+                            ? prev.filter((id) => id !== tag.id)
+                            : [...prev, tag.id]
+                        )
+                      }
+                      aria-pressed={selectedTags.includes(tag.id)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-dm-sans transition-colors shrink-0 ${
+                        selectedTags.includes(tag.id)
+                          ? "bg-brand-accent text-white"
+                          : "bg-brand-bg text-brand-muted hover:border-brand-accent-light border border-transparent"
+                      }`}
+                    >
+                      {tag.icon} {tag.name}
+                    </button>
+                  ))}
+                </div>
               </div>
               {showNewTagForm && (
-                <div className="mt-3 flex gap-2 items-center">
+                <div className="mt-3 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
                   <input
                     type="text"
                     value={newTagName}
@@ -533,21 +561,23 @@ export default function CaricaPage() {
                       <option key={e} value={e}>{e}</option>
                     ))}
                   </select>
-                  <button
-                    type="button"
-                    onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
-                    disabled={creatingTag || !newTagName.trim()}
-                    className="px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-colors disabled:opacity-50 text-sm"
-                  >
-                    {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
-                    className="p-2 text-brand-muted hover:text-brand-danger"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => handleCreateTag(e as unknown as React.FormEvent)}
+                      disabled={creatingTag || !newTagName.trim()}
+                      className="px-3 py-2 bg-brand-accent text-white rounded-lg hover:bg-brand-accent/80 transition-colors disabled:opacity-50 text-sm"
+                    >
+                      {creatingTag ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aggiungi"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setShowNewTagForm(false); setNewTagName(""); setNewTagIcon("🏷️"); }}
+                      className="p-2 text-brand-muted hover:text-brand-danger"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

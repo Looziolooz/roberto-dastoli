@@ -83,30 +83,32 @@ export default function GalleriaPage() {
 
       {/* Tag filters */}
       <ScrollReveal delay={0.1}>
-        <div className="flex flex-wrap gap-2 justify-center px-4">
-          <button
-            onClick={() => setSelectedTag(null)}
-            className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all ${
-              selectedTag === null
-                ? "bg-brand-accent text-white shadow-md"
-                : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent hover:shadow-sm"
-            }`}
-          >
-            Tutte
-          </button>
-          {allTags.map((tag) => (
+        <div className="overflow-x-auto scrollbar-hide px-4 -mx-4">
+          <div className="flex gap-2 justify-start min-w-max pb-2">
             <button
-              key={tag.id}
-              onClick={() => setSelectedTag(tag.id === selectedTag ? null : tag.id)}
-              className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all ${
-                selectedTag === tag.id
+              onClick={() => setSelectedTag(null)}
+              className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all shrink-0 ${
+                selectedTag === null
                   ? "bg-brand-accent text-white shadow-md"
                   : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent hover:shadow-sm"
               }`}
             >
-              {tag.icon} {tag.name}
+              Tutte
             </button>
-          ))}
+            {allTags.map((tag) => (
+              <button
+                key={tag.id}
+                onClick={() => setSelectedTag(tag.id === selectedTag ? null : tag.id)}
+                className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all shrink-0 ${
+                  selectedTag === tag.id
+                    ? "bg-brand-accent text-white shadow-md"
+                    : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent hover:shadow-sm"
+                }`}
+              >
+                {tag.icon} {tag.name}
+              </button>
+            ))}
+          </div>
         </div>
       </ScrollReveal>
 

@@ -6,16 +6,10 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { 
   Check, X, Plus, Trash2, Loader2, Lock, ChevronDown, ChevronUp, 
   Archive, RotateCcw, Image as ImageIcon, FileText, Sparkles, 
-  Camera, BookOpen, FolderArchive, FolderOpen,
-  GraduationCap, Heart, Briefcase, Waves, Mountain,
-  Users, Handshake, PartyPopper, VenetianMask, Ghost,
-  Plane, Palmtree, User, HandHeart, MessageCircle,
-  Cake, Award, Star, Music, Coffee, Smile, HeartHandshake,
-  CloudRain, HeartCrack, Wind, Zap, Eye, Gift, Flame,
-  Clock, TreePine, Flower2, SunMedium, Leaf, Snowflake,
-  Sunrise, Sunset, Moon, Rainbow, Baby, HeartPulse, Sun, Cloud, Home
+  Camera, BookOpen, FolderArchive, FolderOpen, Star
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { TAG_ICONS, getTagIconInfo, getLucideIcon } from "@/lib/tag-icons";
 
 type ContentFilter = "all" | "pending" | "approved";
 type ContentTab = "memories" | "stories" | "archive_memories" | "archive_stories";
@@ -25,74 +19,6 @@ interface ArchivedItem {
   type: "memory" | "story";
   data: MemoryWithTags | Story;
 }
-
-const CATEGORY_ICONS = [
-  // Luoghi e Attività
-  { icon: GraduationCap, name: "Scuola", color: "text-blue-500", key: "scuola" },
-  { icon: Briefcase, name: "Lavoro", color: "text-gray-600", key: "lavoro" },
-  { icon: Waves, name: "Mare", color: "text-cyan-500", key: "mare" },
-  { icon: Mountain, name: "Montagna", color: "text-green-600", key: "montagna" },
-  { icon: Users, name: "Famiglia", color: "text-amber-600", key: "famiglia" },
-  { icon: Handshake, name: "Amicizia", color: "text-purple-500", key: "amicizia" },
-  { icon: PartyPopper, name: "Feste", color: "text-pink-500", key: "feste" },
-  { icon: VenetianMask, name: "Carnevale", color: "text-violet-500", key: "carnevale" },
-  { icon: Ghost, name: "Halloween", color: "text-orange-500", key: "halloween" },
-  { icon: Plane, name: "Viaggi", color: "text-sky-500", key: "viaggi" },
-  { icon: Palmtree, name: "Vacanze", color: "text-teal-500", key: "vacanze" },
-  { icon: User, name: "Parenti", color: "text-rose-500", key: "parenti" },
-  { icon: Music, name: "Musica", color: "text-fuchsia-500", key: "musica" },
-  { icon: Coffee, name: "Momenti", color: "text-amber-700", key: "momenti" },
-  
-  // Emozioni - Gioia
-  { icon: Heart, name: "Gioia", color: "text-red-500", key: "gioia" },
-  { icon: Smile, name: "Felicità", color: "text-yellow-500", key: "felicita" },
-  { icon: HeartHandshake, name: "Amore", color: "text-pink-500", key: "amore" },
-  { icon: Sparkles, name: "Serenità", color: "text-cyan-500", key: "serenita" },
-  { icon: PartyPopper, name: "Festa", color: "text-purple-500", key: "festa" },
-  { icon: Music, name: "Allegria", color: "text-pink-400", key: "allegria" },
-  { icon: Sun, name: "Luce", color: "text-amber-500", key: "luce" },
-  
-  // Emozioni - Malinconia
-  { icon: CloudRain, name: "Malinconia", color: "text-blue-400", key: "malinconia" },
-  { icon: Cloud, name: "Tristezza", color: "text-gray-500", key: "tristezza" },
-  { icon: HeartCrack, name: "Delusione", color: "text-red-400", key: "delusione" },
-  { icon: Wind, name: "Rabbia", color: "text-orange-400", key: "rabbia" },
-  { icon: Zap, name: "Paura", color: "text-yellow-400", key: "paura" },
-  { icon: Eye, name: "Meraviglia", color: "text-indigo-400", key: "meraviglia" },
-  
-  // Moment
-  { icon: Camera, name: "Ricordo", color: "text-teal-400", key: "ricordo" },
-  { icon: Cake, name: "Compleanno", color: "text-red-400", key: "compleanno" },
-  { icon: Gift, name: "Regalo", color: "text-pink-400", key: "regalo" },
-  { icon: Flame, name: "Commemorazione", color: "text-amber-600", key: "commemorazione" },
-  { icon: Clock, name: "Tempo", color: "text-slate-500", key: "tempo" },
-  
-  // Natura
-  { icon: TreePine, name: "Natura", color: "text-green-500", key: "natura" },
-  { icon: Flower2, name: "Primavera", color: "text-pink-300", key: "primavera" },
-  { icon: SunMedium, name: "Estate", color: "text-orange-500", key: "estate" },
-  { icon: Leaf, name: "Autunno", color: "text-amber-600", key: "autunno" },
-  { icon: Snowflake, name: "Inverno", color: "text-blue-300", key: "inverno" },
-  { icon: Sunrise, name: "Alba", color: "text-orange-400", key: "alba" },
-  { icon: Sunset, name: "Tramonto", color: "text-red-300", key: "tramonto" },
-  { icon: Moon, name: "Notte", color: "text-indigo-500", key: "notte" },
-  { icon: Star, name: "Stelle", color: "text-yellow-400", key: "stelle" },
-  { icon: Rainbow, name: "Arcobaleno", color: "text-pink-300", key: "arcobaleno" },
-  
-  // Vita
-  { icon: Baby, name: "Infanzia", color: "text-amber-400", key: "infanzia" },
-  { icon: User, name: "Giovinezza", color: "text-blue-400", key: "giovinezza" },
-  { icon: Briefcase, name: "Adulta", color: "text-slate-600", key: "adulta" },
-  { icon: GraduationCap, name: "Laurea", color: "text-indigo-500", key: "laurea" },
-  { icon: HeartPulse, name: "Matrimonio", color: "text-pink-500", key: "matrimonio" },
-  { icon: Home, name: "Casa", color: "text-amber-600", key: "casa" },
-];
-
-const getTagIcon = (tagName: string) => {
-  const normalizedName = tagName.toLowerCase().trim();
-  const found = CATEGORY_ICONS.find(c => c.key === normalizedName || c.name.toLowerCase() === normalizedName);
-  return found ? { Icon: found.icon, color: found.color } : { Icon: Star, color: "text-brand-accent" };
-};
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -108,7 +34,7 @@ export default function AdminPage() {
   const [archivedStories, setArchivedStories] = useState<Story[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
-  const [newTagIcon, setNewTagIcon] = useState("Star");
+  const [newTagIcon, setNewTagIcon] = useState("🏷️");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [rateLimited, setRateLimited] = useState(false);
@@ -684,7 +610,7 @@ export default function AdminPage() {
           {tagsExpanded && (
             <div className="mt-4 space-y-4 animate-in slide-in-from-top-2 fade-in duration-300">
               {/* Add new tag */}
-              <form onSubmit={handleAddTag} className="flex gap-2 p-4 bg-white/60 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg">
+              <form onSubmit={handleAddTag} className="flex flex-col sm:flex-row gap-2 p-4 bg-white/60 backdrop-blur-xl rounded-2xl border border-white/50 shadow-lg">
                 <input
                   type="text"
                   value={newTagName}
@@ -695,10 +621,10 @@ export default function AdminPage() {
                 <select
                   value={newTagIcon}
                   onChange={(e) => setNewTagIcon(e.target.value)}
-                  className="px-3 py-3 rounded-xl border border-brand-border/30 bg-white/50 backdrop-blur-sm focus:border-brand-accent focus:outline-none font-dm-sans text-sm transition-all"
+                  className="px-3 py-3 rounded-xl border border-brand-border/30 bg-white/50 backdrop-blur-sm focus:border-brand-accent focus:outline-none font-dm-sans text-lg transition-all min-w-[80px]"
                 >
-                  {CATEGORY_ICONS.map((c) => (
-                    <option key={c.key} value={c.name}>{c.name}</option>
+                  {TAG_ICONS.map((t) => (
+                    <option key={t.emoji} value={t.emoji}>{t.emoji} {t.name}</option>
                   ))}
                 </select>
                 <button
@@ -712,7 +638,8 @@ export default function AdminPage() {
               {/* Tags grid */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {tags.map((tag) => {
-                  const { Icon, color } = getTagIcon(tag.name);
+                  const { emoji, iconName, color } = getTagIconInfo(tag.icon || tag.name);
+                  const Icon = getLucideIcon(iconName);
                   return (
                   <div
                     key={tag.id}
@@ -720,6 +647,7 @@ export default function AdminPage() {
                   >
                     <span className="font-dm-sans text-sm flex items-center gap-2">
                       <Icon className={`w-5 h-5 ${color}`} />
+                      <span>{emoji}</span>
                       <span className="text-brand-text">{tag.name}</span>
                     </span>
                     <button
@@ -738,20 +666,20 @@ export default function AdminPage() {
               <div className="p-4 bg-white/40 backdrop-blur-xl rounded-2xl border border-white/30">
                 <p className="text-xs text-brand-muted mb-3 font-dm-sans">Icone rapide:</p>
                 <div className="flex flex-wrap gap-2">
-                  {CATEGORY_ICONS.map((cat) => {
-                    const Icon = cat.icon;
+                  {TAG_ICONS.map((t) => {
+                    const Icon = getLucideIcon(t.iconName);
                     return (
                       <button
-                        key={cat.key}
-                        onClick={() => setNewTagIcon(cat.name)}
+                        key={t.key}
+                        onClick={() => setNewTagIcon(t.emoji)}
                         className={`p-2.5 rounded-xl transition-all duration-300 hover:scale-110 ${
-                          newTagIcon === cat.name
+                          newTagIcon === t.emoji
                             ? "bg-brand-accent text-white shadow-lg" 
                             : "bg-white/60 text-brand-text hover:bg-brand-accent/10"
                         }`}
-                        title={cat.name}
+                        title={t.name}
                       >
-                        <Icon className={`w-5 h-5 ${newTagIcon === cat.name ? "text-white" : cat.color}`} />
+                        <Icon className={`w-5 h-5 ${newTagIcon === t.emoji ? "text-white" : t.color}`} />
                       </button>
                     );
                   })}

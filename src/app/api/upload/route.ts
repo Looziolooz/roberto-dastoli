@@ -1,11 +1,13 @@
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 
 export async function POST(req: NextRequest) {
-  const supabase = await createServerSupabaseClient();
+  console.log("Upload request started");
+  const supabase = createAdminSupabaseClient();
+  console.log("Supabase client created, URL:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
   let formData: FormData;
   try {
@@ -38,12 +40,16 @@ export async function POST(req: NextRequest) {
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const filePath = `pending/${fileName}`;
 
+  console.log("Uploading file:", filePath, "type:", file.type, "size:", file.size);
+
   const { error: uploadError } = await supabase.storage
     .from("gallery")
     .upload(filePath, file, {
       contentType: file.type,
       upsert: false,
     });
+
+  console.log("Upload result, error:", uploadError);
 
   if (uploadError) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
