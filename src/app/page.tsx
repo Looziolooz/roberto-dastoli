@@ -148,7 +148,7 @@ export default function Home() {
                     {latestStory.is_anonymous ? "Anonimo" : latestStory.author_name}
                   </span>
                   <Link
-                    href="/storia"
+                    href="/racconti"
                     className="text-sm text-brand-accent hover:underline font-dm-sans flex items-center gap-1"
                   >
                     Leggi tutto <ArrowRight className="w-3 h-3" />
