@@ -52,12 +52,18 @@ export async function POST(req: NextRequest) {
   console.log("Upload result, error:", uploadError);
 
   if (uploadError) {
+    console.error("Upload error:", uploadError);
     return NextResponse.json({ error: uploadError.message }, { status: 500 });
   }
 
   const { data: urlData } = supabase.storage
     .from("gallery")
     .getPublicUrl(filePath);
+
+  if (!urlData?.publicUrl) {
+    console.error("Failed to get public URL for:", filePath);
+    return NextResponse.json({ error: "Errore nel recupero URL immagine" }, { status: 500 });
+  }
 
   return NextResponse.json({ url: urlData.publicUrl }, { status: 201 });
 }
