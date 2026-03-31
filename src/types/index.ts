@@ -16,6 +16,8 @@ export interface Memory {
   author_name: string;
   image_url: string | null;
   is_approved: boolean;
+  is_archived?: boolean;
+  is_anonymous?: boolean;
   created_at: string;
 }
 
@@ -56,6 +58,7 @@ export interface BiographyChapter {
 export interface CreateMemoryPayload {
   caption: string;
   author_name: string;
+  is_anonymous?: boolean;
   image_url: string | null;
   tag_ids: string[];
 }

@@ -76,11 +76,11 @@ export default function RaccontiPage() {
       {/* Tag filters */}
       {allTags.length > 0 && (
         <ScrollReveal delay={0.1}>
-          <div className="overflow-x-auto scrollbar-hide px-4 -mx-4">
-            <div className="flex gap-2 justify-start min-w-max pb-2" role="group" aria-label="Filtra per categoria">
+          <div className="px-4" role="group" aria-label="Filtra per categoria">
+            <div className="flex flex-wrap gap-2 justify-center">
               <button
                 onClick={() => setSelectedTag(null)}
-                className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors shrink-0 ${
+                className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors ${
                   selectedTag === null
                     ? "bg-brand-accent text-white"
                     : "bg-white text-brand-muted border border-brand-border hover:border-[#8B7355]"
@@ -92,7 +92,7 @@ export default function RaccontiPage() {
                 <button
                   key={tag.id}
                   onClick={() => setSelectedTag(tag.id === selectedTag ? null : tag.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors shrink-0 ${
+                  className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-colors ${
                     selectedTag === tag.id
                       ? "bg-brand-accent text-white"
                       : "bg-white text-brand-muted border border-brand-border hover:border-[#8B7355]"

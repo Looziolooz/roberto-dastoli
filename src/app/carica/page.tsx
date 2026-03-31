@@ -28,6 +28,7 @@ export default function CaricaPage() {
   const [storyBody, setStoryBody] = useState("");
   const [storyAuthorName, setStoryAuthorName] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [selectedMemoryAnonymous, setSelectedMemoryAnonymous] = useState(false);
 
   // New tag form
   const [showNewTagForm, setShowNewTagForm] = useState(false);
@@ -152,7 +153,8 @@ export default function CaricaPage() {
 
       const payload: CreateMemoryPayload = {
         caption,
-        author_name: authorName,
+        author_name: selectedMemoryAnonymous ? "Anonimo" : authorName,
+        is_anonymous: selectedMemoryAnonymous,
         image_url,
         tag_ids: selectedTags,
       };
@@ -355,6 +357,15 @@ export default function CaricaPage() {
                 className="w-full px-4 py-3 rounded-xl border border-brand-border focus:border-brand-accent focus:outline-none font-dm-sans"
                 placeholder="Il tuo nome"
               />
+              <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedMemoryAnonymous}
+                  onChange={(e) => setSelectedMemoryAnonymous(e.target.checked)}
+                  className="w-4 h-4 rounded border-brand-border text-brand-accent focus:ring-brand-accent"
+                />
+                <span className="text-sm text-brand-muted font-dm-sans">Carica in modo anonimo</span>
+              </label>
             </div>
 
             {/* Tags */}

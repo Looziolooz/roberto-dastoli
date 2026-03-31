@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Payload non valido" }, { status: 400 });
   }
 
-  const { caption, author_name, image_url, tag_ids } = body;
+  const { caption, author_name, image_url, tag_ids, is_anonymous } = body;
 
   if (!caption?.trim() || !author_name?.trim()) {
     return NextResponse.json({ error: "Campi obbligatori mancanti" }, { status: 400 });
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   const { data: memory, error: memError } = await supabase
     .from("memories")
-    .insert({ caption, author_name, image_url: image_url ?? null, is_approved: false })
+    .insert({ caption, author_name, image_url: image_url ?? null, is_approved: false, is_anonymous: !!is_anonymous })
     .select()
     .single();
 

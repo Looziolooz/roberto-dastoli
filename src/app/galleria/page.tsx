@@ -83,11 +83,11 @@ export default function GalleriaPage() {
 
       {/* Tag filters */}
       <ScrollReveal delay={0.1}>
-        <div className="overflow-x-auto scrollbar-hide px-4 -mx-4">
-          <div className="flex gap-2 justify-start min-w-max pb-2">
+        <div className="px-4">
+          <div className="flex flex-wrap gap-2 justify-center">
             <button
               onClick={() => setSelectedTag(null)}
-              className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all shrink-0 ${
+              className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all ${
                 selectedTag === null
                   ? "bg-brand-accent text-white shadow-md"
                   : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent hover:shadow-sm"
@@ -99,7 +99,7 @@ export default function GalleriaPage() {
               <button
                 key={tag.id}
                 onClick={() => setSelectedTag(tag.id === selectedTag ? null : tag.id)}
-                className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all shrink-0 ${
+                className={`px-4 py-2 rounded-full text-sm font-dm-sans transition-all ${
                   selectedTag === tag.id
                     ? "bg-brand-accent text-white shadow-md"
                     : "bg-white text-brand-muted border border-brand-border hover:border-brand-accent hover:shadow-sm"
@@ -171,10 +171,13 @@ export default function GalleriaPage() {
                         </p>
                       )}
                       <div className="flex items-center gap-2">
-                        {memory.author_name && (
+                        {memory.author_name && !memory.is_anonymous && (
                           <span className="text-white/80 text-xs">
                             {memory.author_name}
                           </span>
+                        )}
+                        {memory.is_anonymous && (
+                          <span className="text-white/60 text-xs italic">Anonimo</span>
                         )}
                         {memory.memory_tags && memory.memory_tags.length > 0 && (
                           <div className="flex gap-1 ml-auto">
