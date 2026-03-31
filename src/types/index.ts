@@ -73,7 +73,8 @@ export interface AdminActionPayload {
 }
 
 export interface AdminDeleteMemoryPayload extends AdminActionPayload {
-  image_url: string | null;
+  image_url?: string | null;
+  action?: "archive" | "delete_permanent" | "hide";
 }
 
 // ============================================================
