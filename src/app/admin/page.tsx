@@ -34,7 +34,6 @@ export default function AdminPage() {
   const [archivedStories, setArchivedStories] = useState<Story[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagName, setNewTagName] = useState("");
-  const [newTagIcon, setNewTagIcon] = useState("🏷️");
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [rateLimited, setRateLimited] = useState(false);
@@ -233,21 +232,30 @@ export default function AdminPage() {
     setActionLoading(null);
   };
 
+  const getAutoIcon = (name: string): string => {
+    const normalizedName = name.toLowerCase().trim();
+    const found = TAG_ICONS.find(
+      (t) => t.key === normalizedName || t.name.toLowerCase() === normalizedName
+    );
+    return found ? found.emoji : "🏷️";
+  };
+
   const handleAddTag = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTagName.trim()) return;
 
+    const icon = getAutoIcon(newTagName);
+
     const res = await fetch("/api/tags", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newTagName, icon: newTagIcon }),
+      body: JSON.stringify({ name: newTagName, icon }),
     });
 
     if (res.ok) {
       const tag = await res.json();
       setTags((prev) => [...prev, tag]);
       setNewTagName("");
-      setNewTagIcon("🏷️");
     }
   };
 
@@ -619,15 +627,6 @@ export default function AdminPage() {
                   placeholder="Nome categoria"
                   className="flex-1 px-4 py-3 rounded-xl border border-brand-border/30 bg-white/50 backdrop-blur-sm focus:border-brand-accent focus:outline-none focus:ring-2 focus:ring-brand-accent/20 font-dm-sans text-sm transition-all"
                 />
-                <select
-                  value={newTagIcon}
-                  onChange={(e) => setNewTagIcon(e.target.value)}
-                  className="px-3 py-3 rounded-xl border border-brand-border/30 bg-white/50 backdrop-blur-sm focus:border-brand-accent focus:outline-none font-dm-sans text-lg transition-all min-w-[80px]"
-                >
-                  {TAG_ICONS.map((t) => (
-                    <option key={t.emoji} value={t.emoji}>{t.emoji} {t.name}</option>
-                  ))}
-                </select>
                 <button
                   type="submit"
                   className="px-5 py-3 bg-gradient-to-r from-brand-accent to-[#a08060] text-white rounded-xl hover:shadow-lg hover:shadow-brand-accent/25 transition-all duration-300 hover:scale-105"
@@ -661,30 +660,6 @@ export default function AdminPage() {
                   </div>
                   );
                 })}
-              </div>
-
-              {/* Quick add icons */}
-              <div className="p-4 bg-white/40 backdrop-blur-xl rounded-2xl border border-white/30">
-                <p className="text-xs text-brand-muted mb-3 font-dm-sans">Icone rapide:</p>
-                <div className="flex flex-wrap gap-2">
-                  {TAG_ICONS.map((t) => {
-                    const Icon = getLucideIcon(t.iconName);
-                    return (
-                      <button
-                        key={t.key}
-                        onClick={() => setNewTagIcon(t.emoji)}
-                        className={`p-2.5 rounded-xl transition-all duration-300 hover:scale-110 ${
-                          newTagIcon === t.emoji
-                            ? "bg-brand-accent text-white shadow-lg" 
-                            : "bg-white/60 text-brand-text hover:bg-brand-accent/10"
-                        }`}
-                        title={t.name}
-                      >
-                        <Icon className={`w-5 h-5 ${newTagIcon === t.emoji ? "text-white" : t.color}`} />
-                      </button>
-                    );
-                  })}
-                </div>
               </div>
             </div>
           )}
