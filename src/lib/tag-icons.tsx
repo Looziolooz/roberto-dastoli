@@ -88,7 +88,7 @@ export function getLucideIcon(iconName: string): React.ComponentType<{ className
     return iconCache[iconName];
   }
   
-  const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[iconName];
+  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[iconName];
   if (Icon) {
     iconCache[iconName] = Icon;
     return Icon;

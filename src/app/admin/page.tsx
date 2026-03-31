@@ -503,7 +503,8 @@ export default function AdminPage() {
                           {isMemory && item.memory_tags && item.memory_tags.length > 0 && (
                             <div className="flex gap-1 mt-2 flex-wrap">
                               {item.memory_tags.map((mt: MemoryTagJoin) => {
-                                const { Icon, color } = getTagIcon(mt.tags.name);
+                                const { iconName, color } = getTagIconInfo(mt.tags.name);
+                                const Icon = getLucideIcon(iconName);
                                 return (
                                   <span key={mt.tag_id} className="text-xs bg-brand-accent/10 px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
                                     <Icon className={`w-3 h-3 ${color}`} />
